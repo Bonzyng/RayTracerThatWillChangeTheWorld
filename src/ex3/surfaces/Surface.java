@@ -1,5 +1,7 @@
 package ex3.surfaces;
 
+import math.Point3D;
+import math.Ray;
 import math.Vec;
 
 public abstract class Surface {
@@ -18,6 +20,13 @@ public abstract class Surface {
 		setMaterialShininess(100);
 		setReflectance(0);
 	}
+	
+	/**
+	 * Check whether a ray intersects with this surface
+	 * @param iRay
+	 * @return the closest point of intersection if one exists, or null otherwise
+	 */
+	public abstract Point3D intersect(Ray iRay);
 
 	public Vec getMaterialDiffuse() {
 		return mMaterialDiffuse;
