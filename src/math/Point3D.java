@@ -32,10 +32,10 @@ public class Point3D {
 	/**
 	 * Create a point from an input string
 	 * 
-	 * @param v
+	 * @param p
 	 */
-	public Point3D(String v) {
-		Scanner s = new Scanner(v);
+	public Point3D(String p) {
+		Scanner s = new Scanner(p);
 		x = s.nextDouble();
 		y = s.nextDouble();
 		z = s.nextDouble();

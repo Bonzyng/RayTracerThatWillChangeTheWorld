@@ -1,7 +1,9 @@
-package ex3.render.raytrace;
+package ex3.light;
 
 import java.util.Map;
+import java.util.Scanner;
 
+import ex3.render.raytrace.IInitable;
 import math.Point3D;
 import math.Vec;
 
@@ -12,10 +14,18 @@ import math.Vec;
  */
 public abstract class Light implements IInitable {
 //TODO add methods. If you don't like this class you can write your own.
-	protected Vec color;
+	protected Vec mColor; // Intensity of light. I_0 from lecture.
 
 	public Light() {
-		color = new Vec(1,1,1);
+		mColor = new Vec(1,1,1);
+	}
+	
+	public Light(String l) {
+		Scanner s = new Scanner(l);
+		mColor.x = s.nextDouble();
+		mColor.y = s.nextDouble();
+		mColor.z = s.nextDouble();
+		s.close();
 	}
 
 	@Override

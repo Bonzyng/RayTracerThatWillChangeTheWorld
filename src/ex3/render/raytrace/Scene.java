@@ -1,5 +1,6 @@
 package ex3.render.raytrace;
 
+import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,10 @@ public class Scene implements IInitable {
 	//protected List<Surface> surfaces;
 	//protected List<Light> lights;
 	//protected Camera camera;
+	private Vec mBackgroundColor; // v1 is red, v2 green and v3 blue
+	private String mBackgroundTexture;
+	private int mMaxRecursionLevel;
+	private Vec mAmbientLight;
 
 
 	public Scene() {
