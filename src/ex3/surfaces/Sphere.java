@@ -4,6 +4,7 @@ import java.util.Map;
 
 import math.Point3D;
 import math.Ray;
+import math.Vec;
 
 public class Sphere extends Surface {
 	
@@ -43,7 +44,28 @@ public class Sphere extends Surface {
 
 	@Override
 	public Point3D intersect(Ray iRay) {
-		// TODO implement ray-sphere intersection
-		return null;
+		
+		Vec rayOriginToSphereCenter = Point3D.getVec(iRay.mOriginPoint, mCenter);
+		double t_m = Vec.dotProd(rayOriginToSphereCenter, iRay.mDirectionVector);
+		
+		// ray, not line
+		if (t_m < 0) {
+			return null;
+		}
+		
+		double d = Math.sqrt(rayOriginToSphereCenter.lengthSquared() - t_m);
+		if (d > mRadius*mRadius) {
+			return null;
+		}
+		
+		double t_h = Math.sqrt(mRadius - d*d);
+		double t1 = t_m - t_h;
+		double t2 = t_m + t_h;
+		
+		if (Math.min(t1, t2) > 0) {
+			return new Point3D(iRay.mOriginPoint, Vec.scale(Math.min(t1, t2), iRay.mDirectionVector));
+		} else {
+			return new Point3D(iRay.mOriginPoint, Vec.scale(Math.max(t1, t2), iRay.mDirectionVector));
+		}
 	}
 }
