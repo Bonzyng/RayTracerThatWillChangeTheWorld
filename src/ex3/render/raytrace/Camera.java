@@ -27,9 +27,7 @@ public class Camera implements IInitable{
 	private double mScreenWidth;
 	private Point3D mImageCenter3D;
 	
-	public void Camera() {
-		
-	}
+	public Camera() {}
 	
 	public void init(Map<String, String> attributes) {
 		boolean gotDirection = false;

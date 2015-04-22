@@ -7,6 +7,10 @@ import math.Point3D;
 import math.Ray;
 
 public class ConvexPolygon extends Surface {
+	
+	private static final String ERR_NOT_ENOUGH_VERTICES = "Error: Must provide "
+			+ "at least 3 vertices (p0, p1, p2, ...)";
+	
 	protected ArrayList<Point3D> mVertices;
 	
 	@Override
@@ -19,6 +23,10 @@ public class ConvexPolygon extends Surface {
 			mVertices.add(new Point3D(attributes.get(vertex)));
 			i++;
 		};
+
+		if (mVertices.size() < 3) {
+			throw new IllegalArgumentException(ERR_NOT_ENOUGH_VERTICES);
+		}
 	}
 
 	@Override

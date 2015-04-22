@@ -7,8 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import ex3.light.DirectionalLight;
 import ex3.light.Light;
+import ex3.light.OmniLight;
+import ex3.light.SpotLight;
+import ex3.surfaces.ConvexPolygon;
+import ex3.surfaces.Disc;
+import ex3.surfaces.Sphere;
 import ex3.surfaces.Surface;
+import ex3.surfaces.Triangle;
 import math.Point3D;
 import math.Ray;
 import math.Vec;
@@ -106,27 +113,40 @@ public class Scene implements IInitable {
 		//here is some code example for adding a surface or a light. 
 		//you can change everything and if you don't want this method, delete it
 		
-//		Surface surface = null;
-//		Light light = null;
-//	
-//		if ("sphere".equals(name))
-//			surface = new Sphere();
-//		
-//		
-//		if ("omni-light".equals(name))
-//			light = new OmniLight();
-//
-//		//adds a surface to the list of surfaces
-//		if (surface != null) {
-//			surface.init(attributes);
-//			surfaces.add(surface);
-//		}
-//		
-		//adds a light to the list of lights
-//		if (light != null) {
-//			light.init(attributes);
-//			lights.add(light);
-//		}
+		Surface surface = null;
+		Light light = null;
+	
+		// Check if element is a surface. If yes, initialize the corresponding object
+		if ("sphere".equals(name)) {
+			surface = new Sphere();
+		} else if ("disc".equals(name)) {
+			surface = new Disc();
+		} else if ("convexpolygon".equals(name)) {
+			surface = new ConvexPolygon();
+		} else if ("triangle".equals(name)) {
+			surface = new Triangle();
+		}
+		
+		// Check if element is a light. If yes, initialize the corresponding object
+		if ("omni-light".equals(name)) {
+			light = new OmniLight();
+		} else if ("dir-light".equals(name)) {
+			light = new DirectionalLight();
+		} else if ("spot-light".equals(name)) {
+			light = new SpotLight();
+		}
+
+		//adds a surface to the list of surfaces
+		if (surface != null) {
+			surface.init(attributes);
+			mSurfaces.add(surface);
+		}
+		
+		// adds a light to the list of lights
+		if (light != null) {
+			light.init(attributes);
+			mLights.add(light);
+		}
 
 	}
 
