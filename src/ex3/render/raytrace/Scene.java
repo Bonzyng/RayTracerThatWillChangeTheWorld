@@ -108,11 +108,7 @@ public class Scene implements IInitable {
 	 * @param name Object's name
 	 * @param attributes Object's attributes
 	 */
-	public void addObjectByName(String name, Map<String, String> attributes) {
-		//TODO this adds all objects to scene except the camera
-		//here is some code example for adding a surface or a light. 
-		//you can change everything and if you don't want this method, delete it
-		
+	public void addObjectByName(String name, Map<String, String> attributes) {		
 		Surface surface = null;
 		Light light = null;
 	

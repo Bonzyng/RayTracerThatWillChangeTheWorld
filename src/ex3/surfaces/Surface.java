@@ -20,15 +20,7 @@ public abstract class Surface {
 	protected int mMaterialShininess;
 	protected double mReflectance;
 	
-	public Surface() {
-		// All initialized in init
-//		setMaterialDiffuse(new Vec(0.7, 0.7, 0.7));
-//		setMaterialSpecular(new Vec(1, 1, 1));
-//		setMaterialAmbient(new Vec(0.1, 0.1, 0.1));
-//		setMaterialEmission(new Vec(0, 0, 0));
-//		setMaterialShininess(100);
-//		setReflectance(0);
-	}
+	public Surface() {}
 	
 	public void init(Map<String, String> attributes) {
 		
