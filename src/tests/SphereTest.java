@@ -16,6 +16,11 @@ public class SphereTest {
 	}
 	
 	@Test
+	public void testSphereRayOneIntersection() {
+		// TODO
+	}
+	
+	@Test
 	public void testSphereRayNoIntersection() {
 		// TODO
 	}

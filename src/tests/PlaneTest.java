@@ -16,9 +16,9 @@ public class PlaneTest {
 	public void testPlanePointAndNormal() {
 		Point3D p = new Point3D(1, 0, 0);
 		Vec n = new Vec(4, -10, 6);
-		Plane p = new Plane(p, n);
+		Plane plane = new Plane(p, n);
 		n.normalize();
-		assertTrue(p.mNormal.equals(n) && p.mPoint.equals(p));
+		assertTrue(plane.mNormal.equals(n) && plane.mPoint.equals(p));
 	}
 	
 	@Test
