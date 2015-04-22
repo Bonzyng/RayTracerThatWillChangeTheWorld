@@ -17,27 +17,15 @@ public abstract class Light implements IInitable {
 	protected Vec mColor; // Intensity of light. I_0 from lecture.
 
 	public Light() {
-		mColor = new Vec(1,1,1);
-	}
-	
-	public Light(String l) {
-		Scanner s = new Scanner(l);
-		mColor.x = s.nextDouble();
-		mColor.y = s.nextDouble();
-		mColor.z = s.nextDouble();
-		s.close();
+		//initialzed in init
 	}
 
 	@Override
 	public void init(Map<String, String> attributes) {
 		if (attributes.containsKey("color")){
-			//TODO to uncomment this line you should inplement constructor 
-			//with a string argument for Vec. You have an example in Point3D class
-			
-			//color = new Vec(attributes.get("color"));
+			mColor = new Vec(attributes.get("color"));
+		} else {
+			mColor = new Vec(1,1,1);
 		}
 	}
-	
-
-	
 }
