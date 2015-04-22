@@ -16,7 +16,6 @@ public class Ray {
 	 * @param p - point of origin
 	 * @param v - ray direction
 	 */
-
 	public Ray(Point3D p, Vec v) {
 		this.mOriginPoint = new Point3D(p);
 		this.mDirectionVector = new Vec(v);

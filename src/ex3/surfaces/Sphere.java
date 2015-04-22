@@ -11,8 +11,8 @@ public class Sphere extends Surface {
 	private static final String ERR_BAD_RADIUS = "Error: radius value must be a positive double";
 	private static final String ERR_NO_RADIUS = "Error: No radius value given";
 	
-	private Point3D mCenter;
-	private double mRadius;
+	protected Point3D mCenter;
+	protected double mRadius;
 	
 	public Sphere() {
 	}
