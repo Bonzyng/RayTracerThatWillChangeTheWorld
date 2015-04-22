@@ -12,10 +12,15 @@ import org.junit.Test;
 
 import ex3.surfaces.ConvexPolygon;
 
-public class testConvexPolygon {
+public class ConvexPolygonTest {
 	
 	@Test
-	public void testInit() {
+	public void testConvexPolygonTooLittleVertices() {
+		// TODO
+	}
+	
+	@Test
+	public void testConvexPolygonInit() {
 		HashMap<String, String> attributes = new HashMap<String, String>();
 		attributes.put("p0", "1 0 0");
 		attributes.put("p1", "3 2 2");
@@ -42,5 +47,26 @@ public class testConvexPolygon {
 		Point3D i = cp.intersect(r);
 		
 		assertTrue(i != null);
+	}
+	
+	@Test
+	public void testConvexPolygonRayNoIntersection() {
+		HashMap<String, String> attributes = new HashMap<String, String>();
+		attributes.put("p0", "1 0 0");
+		attributes.put("p1", "3 2 2");
+		attributes.put("p2", "0 2 4");
+		ConvexPolygon cp = new ConvexPolygon();
+		cp.init(attributes);
+		
+		Ray r = new Ray(new Point3D(2.5, 6, 11), new Vec(-1, -2, -4));
+		
+		Point3D i = cp.intersect(r);
+		
+		assertTrue(i == null);
+	}
+	
+	@Test
+	public void testConvexPolygonRayIntersectionBehind() {
+		// TODO
 	}
 }

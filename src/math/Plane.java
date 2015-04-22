@@ -22,6 +22,14 @@ public class Plane {
 			return null;
 		}
 		
+		// Check that they ray isn't coming behind the plane - check that angle x between
+		// the normal and the ray direction vectors is acute (0-90 or 270-360)
+		double angle = Math.acos(nDotD / (mNormal.length() * iRay.mDirectionVector.length()));
+		angle = Math.toDegrees(angle);
+		if (angle > 90 || angle < 270) {
+			return null;
+		}
+		
 		// Calculate t for which t = (p - p0) * n / v * n
 		double t = mNormal.dotProd(Point3D.getVec(iRay.mOriginPoint, mPoint)) / nDotD;
 		
