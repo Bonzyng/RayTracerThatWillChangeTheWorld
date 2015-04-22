@@ -13,6 +13,8 @@ public abstract class Surface {
 	private static final String ERR_REFLECTANCE_NOT_LEGAL = "Error: reflectance "
 			+ "must be a double between 0.0 and 1.0";
 	
+	public static final double EPSILON = 0.000001;
+	
 	protected Vec mMaterialDiffuse;
 	protected Vec mMaterialSpecular;
 	protected Vec mMaterialAmbient;

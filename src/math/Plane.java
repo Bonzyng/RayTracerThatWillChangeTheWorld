@@ -1,5 +1,7 @@
 package math;
 
+import ex3.surfaces.Surface;
+
 public class Plane {
 	public Point3D mPoint;
 	public Vec mNormal;
@@ -33,7 +35,7 @@ public class Plane {
 		// Calculate t for which t = (p - p0) * n / v * n
 		double t = mNormal.dotProd(Point3D.getVec(iRay.mOriginPoint, mPoint)) / nDotD;
 		
-		if (t >= 0) {
+		if (t >= Surface.EPSILON) {
 			// Return p0 + tv as the point of intersection
 			return new Point3D(iRay.mOriginPoint, Vec.scale(t, iRay.mDirectionVector));
 		} else {

@@ -45,7 +45,7 @@ public class PlaneTest {
 	}
 	
 	@Test
-	public void testPlaneRayIntersectionIntersectingRay() {
+	public void testPlaneRayIntersection() {
 		Point3D p1 = new Point3D(1, 0, 0);
 		Point3D p2 = new Point3D(3, 2, 2);
 		Point3D p3 = new Point3D(0, 2, 4);
@@ -55,5 +55,10 @@ public class PlaneTest {
 		
 		Point3D i = p.intersect(r);
 		assertTrue(i != null);
+	}
+	
+	@Test
+	public void testPlaneRayIntersectionBehind() {
+		// TODO
 	}
 }

@@ -44,28 +44,48 @@ public class Sphere extends Surface {
 
 	@Override
 	public Point3D intersect(Ray iRay) {
+		// see Rec04, p.11 for explanation to math
 		
-		Vec rayOriginToSphereCenter = Point3D.getVec(iRay.mOriginPoint, mCenter);
-		double t_m = Vec.dotProd(rayOriginToSphereCenter, iRay.mDirectionVector);
+		Vec L = Point3D.getVec(iRay.mOriginPoint, mCenter);
 		
-		// ray, not line
+		// Find distance from origin of ray (p0) to the center of the ray segment (pp') 
+		// perpendicular to a ray (d) originating from the sphere center (O) (using projection)
+		
+		double t_m = Vec.dotProd(L, iRay.mDirectionVector);
+		
+		// If value is smaller than 0, point not on the ray (t must be positive!)
 		if (t_m < 0) {
 			return null;
 		}
 		
-		double d = Math.sqrt(rayOriginToSphereCenter.lengthSquared() - t_m);
-		if (d > mRadius*mRadius) {
+		// Shortest distance from sphere center to ray
+		double d = Math.sqrt(L.lengthSquared()
+				- (t_m * t_m));
+		
+		// If d^2 is greater than r^s (mRadius^2) than d is
+		// out of the circle, and ray does not intersect
+		if ((d * d) > (mRadius * mRadius)) {
 			return null;
 		}
 		
-		double t_h = Math.sqrt(mRadius - d*d);
-		double t1 = t_m - t_h;
-		double t2 = t_m + t_h;
+		// Edge length between center of the ray segment and the possible intersection
+		// points
+		double t_h = Math.sqrt((mRadius * mRadius) - (d * d));
 		
-		if (Math.min(t1, t2) > 0) {
-			return new Point3D(iRay.mOriginPoint, Vec.scale(Math.min(t1, t2), iRay.mDirectionVector));
+		// Intersection points of the ray with the sphere
+		double p1 = t_m - t_h;
+		double p2 = t_m + t_h;
+		
+		// Check if p1 is negative. If it is, it's behind the ray, and thus not on it.
+		// If positive, it's obviously closer to the ray origin than p2.
+		if (p1 > EPSILON) {
+			return new Point3D(iRay.mOriginPoint, Vec.scale(p1, iRay.mDirectionVector));
+		// Same check like for p1.
+		} else if (p2 > EPSILON) {
+			return new Point3D(iRay.mOriginPoint, Vec.scale(p2, iRay.mDirectionVector));
+		// Both points behind the ray, no intersection.
 		} else {
-			return new Point3D(iRay.mOriginPoint, Vec.scale(Math.max(t1, t2), iRay.mDirectionVector));
+			return null;
 		}
 	}
 }
