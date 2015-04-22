@@ -1,11 +1,14 @@
 package ex3.render.raytrace;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import ex3.light.Light;
+import ex3.surfaces.Surface;
 import math.Point3D;
 import math.Ray;
 import math.Vec;
@@ -18,11 +21,15 @@ import math.Vec;
  * add members methods as you wish
  */
 public class Scene implements IInitable {
+	
+	private final static String ERR_MISSING_BACKGROUND_TEXTURE = "Error: No background-tex given";
+	private final static String ERR_MAX_RECURSION_NOT_A_NUM = "Error: max-recursion-level value must "
+			+ "be a positive integer";
 
-//TODO add members
-	//protected List<Surface> surfaces;
-	//protected List<Light> lights;
-	//protected Camera camera;
+	private List<Surface> mSurfaces;
+	private List<Light> mLights;
+	private Camera mCamera;
+	
 	private Vec mBackgroundColor; // v1 is red, v2 green and v3 blue
 	private String mBackgroundTexture;
 	private int mMaxRecursionLevel;
@@ -30,15 +37,47 @@ public class Scene implements IInitable {
 
 
 	public Scene() {
-
-		//surfaces = new LinkedList<Surface>();
-		//lights = new LinkedList<Light>();
-		//camera = new Camera();
+		 mSurfaces = new ArrayList<Surface>();
+		 mLights = new ArrayList<Light>();
+		 mCamera = new Camera();
 	}
 
 	public void init(Map<String, String> attributes) {
 	
-		//TODO store xml scene properties in members (parameters just below scene in the XML)
+		// Check attributes validity and populate the members
+		if (attributes.containsKey("background-col")) {
+			mBackgroundColor = new Vec(attributes.get("background-col"));
+		} else {
+			mBackgroundColor = new Vec(0, 0, 0);
+		}
+		
+		if (attributes.containsKey("background-tex")) {
+			mBackgroundTexture = attributes.get("background-tex");
+		} else {
+			// TODO: Add default background texture?
+			throw new IllegalArgumentException(ERR_MISSING_BACKGROUND_TEXTURE);
+		}
+		
+		if (attributes.containsKey("max-recursion-level")) {
+			try {
+				mMaxRecursionLevel = Integer.parseInt(attributes.get("max-recursion-level"));
+				
+				if (mMaxRecursionLevel < 1) {
+					throw new IllegalArgumentException(ERR_MAX_RECURSION_NOT_A_NUM);
+				}
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException(ERR_MAX_RECURSION_NOT_A_NUM);
+			}
+		} else {
+			mMaxRecursionLevel = 10;
+		}
+		
+		if (attributes.containsKey("ambient-light")) {
+			mAmbientLight = new Vec(attributes.get("ambient-light"));
+		} else {
+			mAmbientLight = new Vec(0, 0, 0);
+		}
+		// End populate members
 	}
 
 	/**
@@ -92,7 +131,6 @@ public class Scene implements IInitable {
 	}
 
 	public void setCameraAttributes(Map<String, String> attributes) {
-		//TODO uncomment after implementing camera interface if you like
-		//this.camera.init(attributes);
+		mCamera.init(attributes);
 	}
 }

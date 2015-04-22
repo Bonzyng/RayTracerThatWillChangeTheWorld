@@ -9,6 +9,8 @@ import ex3.render.IRenderer;
 
 public class RayTracer implements IRenderer {
 
+	private Scene mScene;
+	
 	/**
 	 * Inits the renderer with scene description and sets the target canvas to
 	 * size (width X height). After init renderLine may be called
@@ -27,13 +29,14 @@ public class RayTracer implements IRenderer {
 	public void init(SceneDescriptor sceneDesc, int width, int height, File path) {
 		// TODO Implement this
 		//you can initialize your scene object here
+		mScene.init(sceneDesc.getSceneAttributes());
 		
-		//for (Element e : sceneDesc.getObjects()) {
-		//	scene.addObjectByName(e.getName(), e.getAttributes());
-		//}
+		for (Element e : sceneDesc.getObjects()) {
+			mScene.addObjectByName(e.getName(), e.getAttributes());
+		}
 		
-		//scene.setCameraAttributes(sceneDesc.getCameraAttributes());
-
+		mScene.setCameraAttributes(sceneDesc.getCameraAttributes());
+		
 	}
 
 	/**
