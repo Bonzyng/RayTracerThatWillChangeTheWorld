@@ -13,17 +13,19 @@ public class ConvexPolygon extends Surface {
 	private static final String ERR_NOT_ENOUGH_VERTICES = "Error: Must provide "
 			+ "at least 3 vertices (p0, p1, p2, ...)";
 	
-	protected ArrayList<Point3D> mVertices;
+	public ArrayList<Point3D> mVertices;
 	
 	@Override
 	public void init(Map<String, String> attributes) {
 		super.init(attributes);
+		mVertices = new ArrayList<Point3D>();
 		
 		int i = 0;
 		String vertex = "p" + i;
 		while (attributes.containsKey(vertex)) {
 			mVertices.add(new Point3D(attributes.get(vertex)));
 			i++;
+			vertex = "p" + i;
 		};
 		
 		// TODO: Check all vertices different, given in correct order, convex
@@ -52,7 +54,7 @@ public class ConvexPolygon extends Surface {
 		}
 		
 		// Check for last edge (p_max, p0)
-		if (!checkEdge(iRay.mOriginPoint, intersectionPoint, mVertices.size(), 0)) {
+		if (!checkEdge(iRay.mOriginPoint, intersectionPoint, mVertices.size() - 1, 0)) {
 			return null;
 		}
 		
