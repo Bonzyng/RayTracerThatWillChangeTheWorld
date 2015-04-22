@@ -15,6 +15,13 @@ public class Plane {
 		mNormal.normalize();
 	}
 	
+	public Plane(Point3D p, Vec normal) {
+		mPoint = new Point3D(p);
+		
+		mNormal = new Vec(normal);
+		mNormal.normalize();
+	}
+	
 	public Point3D intersect(Ray iRay) { // Ray given as p0 origin and v direction vector
 										 // plane represented by point p and normal n
 		double nDotD;

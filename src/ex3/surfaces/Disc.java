@@ -2,6 +2,7 @@ package ex3.surfaces;
 
 import java.util.Map;
 
+import math.Plane;
 import math.Point3D;
 import math.Ray;
 import math.Vec;
@@ -28,7 +29,19 @@ public class Disc extends Sphere {
 	
 	@Override
 	public Point3D intersect(Ray iRay) {
-		// TODO implement disc-ray intersection
-		return null;
+		Plane plane = new Plane(mCenter, mNormal);
+		
+		Point3D intersectionPoint = plane.intersect(iRay);
+		
+		if (intersectionPoint == null) {
+			return null;
+		}
+		
+		Vec vecFromCenterToIntersection = Point3D.getVec(intersectionPoint, mCenter);
+		if (Vec.dotProd(vecFromCenterToIntersection, vecFromCenterToIntersection) <= (mRadius * mRadius)) {
+			return intersectionPoint;
+		} else {
+			return null;
+		}
 	}
 }
