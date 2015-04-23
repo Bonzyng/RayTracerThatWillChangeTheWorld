@@ -37,7 +37,10 @@ public class Disc extends Sphere {
 			return null;
 		}
 		
+		//create the vector P-O
 		Vec vecFromCenterToIntersection = Point3D.getVec(intersectionPoint, mCenter);
+		
+		// Checks if point of intersection is on the disc or not
 		if (Vec.dotProd(vecFromCenterToIntersection, vecFromCenterToIntersection) <= (mRadius * mRadius)) {
 			return intersectionPoint;
 		} else {
