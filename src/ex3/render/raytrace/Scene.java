@@ -29,9 +29,15 @@ import math.Vec;
  */
 public class Scene implements IInitable {
 	
+	private final static int RED = 0;
+	private final static int GREEN = 1;
+	private final static int BLUE = 2;
+	
 	private final static String ERR_MISSING_BACKGROUND_TEXTURE = "Error: No background-tex given";
 	private final static String ERR_MAX_RECURSION_NOT_A_NUM = "Error: max-recursion-level value must "
 			+ "be a positive integer";
+	private static final String ERR_COLOR_CODE = "Error: Must provide a RED (0), GREEN (1),"
+			+ " or BLUE (2) color code only.";
 
 	private List<Surface> mSurfaces;
 	private List<Light> mLights;
@@ -62,7 +68,8 @@ public class Scene implements IInitable {
 			mBackgroundTexture = attributes.get("background-tex");
 		} else {
 			// TODO: Add default background texture?
-			throw new IllegalArgumentException(ERR_MISSING_BACKGROUND_TEXTURE);
+//			throw new IllegalArgumentException(ERR_MISSING_BACKGROUND_TEXTURE);
+			mBackgroundTexture = "";
 		}
 		
 		if (attributes.containsKey("max-recursion-level")) {
@@ -91,15 +98,69 @@ public class Scene implements IInitable {
 	 * Send ray return the nearest intersection. Return null if no intersection
 	 * 
 	 * @param ray
-	 * @return
+	 * @return the closest intersection point to the ray
 	 */
-	public void findIntersection(Ray ray) {
+	public Point3D findIntersection(Ray ray) {
 		//TODO find ray intersection with scene, change the output type, add whatever you need
+		double minDistance = Double.MAX_VALUE;
+		Surface closestSurface = null;
+		Point3D closestIntersection = null;
+		
+		int numOfSurfaces = mSurfaces.size();
+		
+		// Loop through all surfaces in the scene
+		for (int i = 0; i < numOfSurfaces; i++) {
+			Surface surface = mSurfaces.get(i);
+			
+			// Find intersection point with each of them
+			Point3D intersection = surface.intersect(ray);
+			
+			// If there's an intersection, calculate it's distance from the ray's
+			// origin and return the closest one
+			if (intersection != null) {
+				double distance = intersection.distance(ray.mOriginPoint);
+				
+				if (distance < minDistance) {
+					minDistance = distance;
+					closestSurface = surface;
+					closestIntersection = intersection;
+				}
+			}
+		}
+		
+		return closestIntersection;
 	}
 
 	public Vec calcColor(Ray ray, int level) {
 		//TODO implement ray tracing recursion here, add whatever you need
+		for (int i = 0; i < 3; i ++) {
+			// Once for each of RED, GREEN, BLUE
+		}
 		return null;
+	}
+	
+	private double calcEmissionColor(Surface surface, int color) {
+		return surface.getEmissionColor(color);
+	}
+	
+	private double calcAmbientColor(int color) {
+		if (color == RED) {
+			return mAmbientLight.x;
+		} else if (color == GREEN) {
+			return mAmbientLight.y;
+		} else if (color == BLUE) {
+			return mAmbientLight.z;
+		} else {
+			throw new IllegalArgumentException(ERR_COLOR_CODE);
+		}
+	}
+	
+	private double calcDiffuseLight(Point3D hit, Light light, int color) {
+		return 0;
+	}
+	
+	private double calcSpecularLight(Point3D hit, Light light, int color) {
+		return 0;
 	}
 
 	/**
@@ -148,5 +209,9 @@ public class Scene implements IInitable {
 
 	public void setCameraAttributes(Map<String, String> attributes) {
 		mCamera.init(attributes);
+	}
+	
+	public Camera getCamera() {
+		return mCamera;
 	}
 }

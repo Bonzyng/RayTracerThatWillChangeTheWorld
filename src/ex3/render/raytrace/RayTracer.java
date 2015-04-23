@@ -3,6 +3,8 @@ package ex3.render.raytrace;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+import math.Point3D;
+import math.Ray;
 import ex3.parser.Element;
 import ex3.parser.SceneDescriptor;
 import ex3.render.IRenderer;
@@ -29,6 +31,8 @@ public class RayTracer implements IRenderer {
 	public void init(SceneDescriptor sceneDesc, int width, int height, File path) {
 		// TODO Implement this
 		//you can initialize your scene object here
+		mScene = new Scene();
+		
 		mScene.init(sceneDesc.getSceneAttributes());
 		
 		for (Element e : sceneDesc.getObjects()) {
@@ -51,6 +55,14 @@ public class RayTracer implements IRenderer {
 	@Override
 	public void renderLine(BufferedImage canvas, int line) {
 		// TODO Implement this
+		int canvasWidth = canvas.getWidth();
+		int canvasHeight = canvas.getHeight();
+		for (int x = 0; x < canvasWidth; x++) {
+			Ray ray = mScene.getCamera().constructRayThroughPixel(x, line, canvasHeight, canvasWidth);
+			Point3D intersect = mScene.findIntersection(ray);
+			// Vec color = calcColor(ray, scene)
+			// canvas.setRGB(color)
+		}
 	}
 
 }

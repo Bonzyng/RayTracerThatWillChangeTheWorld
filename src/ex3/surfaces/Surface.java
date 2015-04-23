@@ -8,10 +8,16 @@ import math.Vec;
 
 public abstract class Surface {
 	
+	private final static int RED = 0;
+	private final static int GREEN = 1;
+	private final static int BLUE = 2;
+	
 	private static final String ERR_SHININESS_NOT_POS_INTEGER = "Error: mtl-shininess "
 			+ "must be a positive integer";
 	private static final String ERR_REFLECTANCE_NOT_LEGAL = "Error: reflectance "
 			+ "must be a double between 0.0 and 1.0";
+	private static final String ERR_COLOR_CODE = "Error: Must provide a RED (0), GREEN (1),"
+			+ " or BLUE (2) color code only.";
 	
 	public static final double EPSILON = 0.000001;
 	
@@ -86,4 +92,24 @@ public abstract class Surface {
 	 * @return the closest point of intersection if one exists, or null otherwise
 	 */
 	public abstract Point3D intersect(Ray iRay);
+	
+	/**
+	 * Get the normal vector to the surface at the given point
+	 * 
+	 * @param point
+	 * @return normal to the surface at that point
+	 */
+	public abstract Vec getNormalAtPoint(Point3D point);
+	
+	public double getEmissionColor(int color) {
+		if (color == RED) {
+			return mMaterialEmission.x;
+		} else if (color == GREEN) {
+			return mMaterialEmission.y;
+		} else if (color == BLUE) {
+			return mMaterialEmission.z;
+		} else {
+			throw new IllegalArgumentException(ERR_COLOR_CODE);
+		}
+	}
 }
