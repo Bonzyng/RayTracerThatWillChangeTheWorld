@@ -2,22 +2,17 @@ package ex3.surfaces;
 
 import java.util.Map;
 
+import e3.utils.eRGB;
 import math.Point3D;
 import math.Ray;
 import math.Vec;
 
 public abstract class Surface {
 	
-	private final static int RED = 0;
-	private final static int GREEN = 1;
-	private final static int BLUE = 2;
-	
 	private static final String ERR_SHININESS_NOT_POS_INTEGER = "Error: mtl-shininess "
 			+ "must be a positive integer";
 	private static final String ERR_REFLECTANCE_NOT_LEGAL = "Error: reflectance "
 			+ "must be a double between 0.0 and 1.0";
-	private static final String ERR_COLOR_CODE = "Error: Must provide a RED (0), GREEN (1),"
-			+ " or BLUE (2) color code only.";
 	
 	public static final double EPSILON = 0.000001;
 	
@@ -101,27 +96,33 @@ public abstract class Surface {
 	 */
 	public abstract Vec getNormalAtPoint(Point3D point);
 	
-	public double getEmissionColor(int color) {
-		if (color == RED) {
+	public double getEmissionColor(eRGB color) {
+		if (color == eRGB.RED) {
 			return mMaterialEmission.x;
-		} else if (color == GREEN) {
+		} else if (color == eRGB.GREEN) {
 			return mMaterialEmission.y;
-		} else if (color == BLUE) {
+		} else { // return BLUE
 			return mMaterialEmission.z;
-		} else {
-			throw new IllegalArgumentException(ERR_COLOR_CODE);
 		}
 	}
 	
-	public double getAmbientColor(int color) {
-		if (color == RED) {
+	public double getAmbientColor(eRGB color) {
+		if (color == eRGB.RED) {
 			return mMaterialAmbient.x;
-		} else if (color == GREEN) {
+		} else if (color == eRGB.GREEN) {
 			return mMaterialAmbient.y;
-		} else if (color == BLUE) {
+		} else { // return BLUE
 			return mMaterialAmbient.z;
-		} else {
-			throw new IllegalArgumentException(ERR_COLOR_CODE);
+		}
+	}
+	
+	public double getDiffuseValue(eRGB color) {
+		if (color == eRGB.RED) {
+			return mMaterialDiffuse.x;
+		} else if (color == eRGB.GREEN) {
+			return mMaterialDiffuse.y;
+		} else { // return BLUE
+			return mMaterialDiffuse.z;
 		}
 	}
 }

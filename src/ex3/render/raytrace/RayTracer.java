@@ -5,6 +5,7 @@ import java.io.File;
 
 import math.Point3D;
 import math.Ray;
+import e3.utils.Intersection;
 import ex3.parser.Element;
 import ex3.parser.SceneDescriptor;
 import ex3.render.IRenderer;
@@ -59,7 +60,7 @@ public class RayTracer implements IRenderer {
 		int canvasHeight = canvas.getHeight();
 		for (int x = 0; x < canvasWidth; x++) {
 			Ray ray = mScene.getCamera().constructRayThroughPixel(x, line, canvasHeight, canvasWidth);
-			Point3D intersect = mScene.findIntersection(ray);
+			Intersection intersect = mScene.findIntersection(ray);
 			// Vec color = calcColor(ray, scene)
 			// canvas.setRGB(color)
 		}

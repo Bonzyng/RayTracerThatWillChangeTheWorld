@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import e3.utils.Intersection;
+import e3.utils.eRGB;
 import ex3.light.DirectionalLight;
 import ex3.light.Light;
 import ex3.light.OmniLight;
@@ -29,15 +31,9 @@ import math.Vec;
  */
 public class Scene implements IInitable {
 	
-	private final static int RED = 0;
-	private final static int GREEN = 1;
-	private final static int BLUE = 2;
-	
 	private final static String ERR_MISSING_BACKGROUND_TEXTURE = "Error: No background-tex given";
 	private final static String ERR_MAX_RECURSION_NOT_A_NUM = "Error: max-recursion-level value must "
 			+ "be a positive integer";
-	private static final String ERR_COLOR_CODE = "Error: Must provide a RED (0), GREEN (1),"
-			+ " or BLUE (2) color code only.";
 
 	private List<Surface> mSurfaces;
 	private List<Light> mLights;
@@ -100,7 +96,7 @@ public class Scene implements IInitable {
 	 * @param ray
 	 * @return the closest intersection point to the ray
 	 */
-	public Point3D findIntersection(Ray ray) {
+	public Intersection findIntersection(Ray ray) {
 		//TODO find ray intersection with scene, change the output type, add whatever you need
 		double minDistance = Double.MAX_VALUE;
 		Surface closestSurface = null;
@@ -128,38 +124,68 @@ public class Scene implements IInitable {
 			}
 		}
 		
-		return closestIntersection;
+		Intersection intersection = new Intersection(closestIntersection, closestSurface);
+		
+		return intersection;
 	}
 
 	public Vec calcColor(Ray ray, int level) {
 		//TODO implement ray tracing recursion here, add whatever you need
+		Vec color = new Vec();
 		for (int i = 0; i < 3; i ++) {
 			// Once for each of RED, GREEN, BLUE
 		}
-		return null;
+		return color;
 	}
 	
-	private double calcEmissionColor(Surface surface, int color) {
+	private double calcEmissionColor(Surface surface, eRGB color) {
 		return surface.getEmissionColor(color);
 	}
 	
-	private double calcAmbientColor(Surface surface, int color) {
-		if (color == RED) {
-			return mAmbientLight.x * surface.getAmbientColor(RED);
-		} else if (color == GREEN) {
-			return mAmbientLight.y * surface.getAmbientColor(GREEN);
-		} else if (color == BLUE) {
-			return mAmbientLight.z * surface.getAmbientColor(BLUE);
-		} else {
-			throw new IllegalArgumentException(ERR_COLOR_CODE);
+	private double calcAmbientColor(Surface surface, eRGB color) {
+		if (color == eRGB.RED) {
+			return mAmbientLight.x * surface.getAmbientColor(color);
+		} else if (color == eRGB.GREEN) {
+			return mAmbientLight.y * surface.getAmbientColor(color);
+		} else  { // return BLUE
+			return mAmbientLight.z * surface.getAmbientColor(color);
 		}
 	}
 	
-	private double calcDiffuseLight(Point3D hit, Light light, int color) {
-		return 0;
+	private double calcDiffuseLight(Intersection intersection, Light light, eRGB color) {
+		double diffuseIntensity;
+		
+		double lightIntensity;
+		double diffuseConstant;
+		Vec vecToLight;
+		Vec normalAtHit;
+		
+		if (light.getClass() == DirectionalLight.class) {
+			vecToLight = ((DirectionalLight) light).getDirection();
+			lightIntensity = ((DirectionalLight) light).getLightIntensity(color);
+			
+		} else if (light.getClass() == OmniLight.class) {			
+			vecToLight = Point3D.getVec(intersection.getHit(), ((OmniLight) light).getPosition());
+			lightIntensity = ((OmniLight) light).getLightIntensity(color, vecToLight.length());
+			
+		} else { // SpotLight
+			vecToLight = Point3D.getVec(intersection.getHit(), ((SpotLight) light).getPosition());
+			lightIntensity = ((SpotLight) light).getLightIntensity(color, vecToLight.length(), intersection.getHit());
+		}
+		
+		normalAtHit = intersection.getSurface().getNormalAtPoint(intersection.getHit());
+		
+		vecToLight.normalize();
+		normalAtHit.normalize();
+		
+		diffuseConstant	= intersection.getSurface().getDiffuseValue(color);
+		
+		diffuseIntensity = diffuseConstant * (normalAtHit.dotProd(vecToLight)) * lightIntensity;
+		
+		return diffuseIntensity;
 	}
 	
-	private double calcSpecularLight(Point3D hit, Light light, int color) {
+	private double calcSpecularLight(Point3D hit, Light light, eRGB color) {
 		return 0;
 	}
 
