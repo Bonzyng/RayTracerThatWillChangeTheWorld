@@ -13,7 +13,11 @@ import math.Vec;
  * Add methods as you wish, this can be a super class for other lights (think which)
  */
 public abstract class Light implements IInitable {
-//TODO add methods. If you don't like this class you can write your own.
+	
+	protected final static int RED = 0;
+	protected final static int GREEN = 1;
+	protected final static int BLUE = 2;
+	
 	protected Vec mColor; // Intensity of light. I_0 from lecture.
 
 	public Light() {
