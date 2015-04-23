@@ -61,7 +61,7 @@ public class RayTracer implements IRenderer {
 		int canvasHeight = canvas.getHeight();
 		for (int x = 0; x < canvasWidth; x++) {
 			if (line == canvasHeight / 2 && x == canvasWidth / 2) {
-				System.out.println("Hi stop here");
+				System.out.println("Half way there!");
 			}
 			Ray ray = mScene.getCamera().constructRayThroughPixel(x, line, canvasHeight, canvasWidth);
 			Color color = mScene.calcColor(ray, 0);

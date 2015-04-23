@@ -22,7 +22,7 @@
 
 	<spot-light 
 	pos="1 1 1"
-	dir="-5 -5 -3"
+	direction="-5 -5 -3"
 	color="1 1 1"
 	kc="0.001"
 	kl="0.001"

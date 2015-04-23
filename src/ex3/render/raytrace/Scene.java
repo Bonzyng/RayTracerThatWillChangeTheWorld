@@ -137,7 +137,7 @@ public class Scene implements IInitable {
 			int numOfLights = mLights.size();
 			
 			for (int i = 0; i < 3; i ++) {
-				double colorValue;
+				double colorValue = 0;
 				eRGB color = eRGB.values()[i];
 				// Once for each of RED, GREEN, BLUE
 				colorValue = calcEmissionColor(intersect.getSurface(), color) +
@@ -151,7 +151,7 @@ public class Scene implements IInitable {
 					Intersection lightOccluded = findIntersection(rayToLight);
 					if (lightOccluded.getHit() == null) {
 						colorValue += (calcDiffuseLight(intersect, light, color) +
-								calcSpecularLight(intersect, light, color)) * light.getColor().getValue(color);
+								calcSpecularLight(intersect, light, color, ray)) * light.getColor().getValue(color);
 					}
 				}
 				
@@ -170,6 +170,8 @@ public class Scene implements IInitable {
 		return rgb;
 	}
 	
+	// Used to check if the light to an intersection point is blocked by another
+	// object or not
 	private Ray constructRayToLight(Point3D hit, Light light) {
 		if (light.getClass() == DirectionalLight.class) {
 			DirectionalLight dLight = (DirectionalLight) light;
@@ -242,11 +244,11 @@ public class Scene implements IInitable {
 		return diffuseIntensity;
 	}
 	
-	private double calcSpecularLight(Intersection intersection, Light light, eRGB color) {
+	private double calcSpecularLight(Intersection intersection, Light light, eRGB color, Ray ray) {
 		double specularIntensity;
 		
 		// All the equation factors
-		Vec vecToEye;
+		Vec vecToRayOrigin;
 		Vec vecToLight;
 		Vec vecToLightReflection;
 		Vec normalAtHit;
@@ -279,15 +281,24 @@ public class Scene implements IInitable {
 		normalAtHit.normalize();
 		vecToLight.normalize();
 		
-		vecToEye = Point3D.getVec(intersection.getHit(), mCamera.getEye());
+		vecToRayOrigin = Point3D.getVec(intersection.getHit(), ray.mOriginPoint);
+
 		vecToLightReflection = vecToLight.reflect(normalAtHit);
 		vecToLightReflection.normalize();
+		vecToLightReflection.negate();
+		vecToRayOrigin.normalize();
 		
 		specularCoefficient = intersection.getSurface().getSpecularColor(color);
 		
 		shininess = intersection.getSurface().getShininess();
 		
-		specularIntensity = specularCoefficient * Math.pow(vecToEye.dotProd(vecToLightReflection), shininess) * lightIntensity;
+		double dotProd = vecToRayOrigin.dotProd(vecToLightReflection);
+		
+		if (dotProd < 0) {
+			dotProd = 0;
+		}
+		
+		specularIntensity = specularCoefficient * Math.pow(dotProd, shininess) * lightIntensity;
 		
 		return specularIntensity;
 	}
