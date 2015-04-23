@@ -22,7 +22,7 @@ public class DirectionalLight extends Light {
 		}
 	}
 
-	public double getLightIntensity(eRGB color, double distance) {
+	public double getLightIntensity(eRGB color) {
 		if (color == eRGB.RED) {
 			return mColor.x;
 		} else if (color == eRGB.GREEN) {
