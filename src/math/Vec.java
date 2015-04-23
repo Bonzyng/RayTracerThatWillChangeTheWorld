@@ -356,4 +356,14 @@ public class Vec {
 			z = value;
 		}
 	}
+	
+	public double getValue(eRGB color) {
+		if (color == eRGB.RED) {
+			return x;
+		} else if (color == eRGB.GREEN) {
+			return y;
+		} else {
+			return z;
+		}
+	}
 }

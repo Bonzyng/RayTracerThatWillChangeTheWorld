@@ -49,7 +49,6 @@ public class OmniLight extends Light {
 		}
 		
 		mAttentuation = new Vec(k_c, k_l, k_q);
-		mAttentuation.normalize();
 	}
 
 	public double getLightIntensity(eRGB color, double distance) {
@@ -64,7 +63,7 @@ public class OmniLight extends Light {
 		}
 		
 		// I_0 / (k_c + k_l*d + k_q*d^2) - see p.33 in lec 3 presentation
-		intensity /= mAttentuation.x + (mAttentuation.y * distance) + (mAttentuation.z * distance * distance);
+		intensity /= (mAttentuation.x + (mAttentuation.y * distance) + (mAttentuation.z * distance * distance));
 		
 		return intensity;
 	}

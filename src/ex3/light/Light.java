@@ -26,4 +26,8 @@ public abstract class Light implements IInitable {
 			mColor = new Vec(1,1,1);
 		}
 	}
+	
+	public Vec getColor() {
+		return mColor;
+	}
 }

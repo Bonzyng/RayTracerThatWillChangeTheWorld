@@ -58,7 +58,6 @@ public class SpotLight extends Light {
 		}
 		
 		mAttentuation = new Vec(k_c, k_l, k_q);
-		mAttentuation.normalize();
 	}
 
 	public double getLightIntensity(eRGB color, double distance, Point3D hit) {

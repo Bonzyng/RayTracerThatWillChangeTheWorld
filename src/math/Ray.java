@@ -21,4 +21,10 @@ public class Ray {
 		this.mDirectionVector = new Vec(v);
 		mDirectionVector.normalize(); // Ensure direction vector is normalized
 	}
+	
+	public Ray(Point3D origin, Point3D other) {
+		mDirectionVector = Point3D.getVec(origin, other);
+		mDirectionVector.normalize();
+		mOriginPoint = origin;
+	}
 }

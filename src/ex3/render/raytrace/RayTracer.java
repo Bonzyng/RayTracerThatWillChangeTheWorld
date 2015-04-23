@@ -65,7 +65,11 @@ public class RayTracer implements IRenderer {
 			}
 			Ray ray = mScene.getCamera().constructRayThroughPixel(x, line, canvasHeight, canvasWidth);
 			Color color = mScene.calcColor(ray, 0);
-//			int rgb = ((int) color.x << 32) | ((int) color.y << 16) | (int) color.z;
+			
+//			System.out.println("x: " + x + " y: " + line + "color red: " + color.getRed() + " green: " + color.getGreen() + " blue: " + color.getBlue());
+//			if (color.getRed() == 255 && color.getGreen() == 255 && color.getBlue() == 255) {
+//				System.out.println("Stop");
+//			}
 			canvas.setRGB(x, line, color.getRGB());
 		}
 	}

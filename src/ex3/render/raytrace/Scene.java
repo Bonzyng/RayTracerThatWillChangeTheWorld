@@ -2,11 +2,12 @@ package ex3.render.raytrace;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
+import math.Point3D;
+import math.Ray;
+import math.Vec;
 import e3.utils.Intersection;
 import e3.utils.eRGB;
 import ex3.light.DirectionalLight;
@@ -18,9 +19,6 @@ import ex3.surfaces.Disc;
 import ex3.surfaces.Sphere;
 import ex3.surfaces.Surface;
 import ex3.surfaces.Triangle;
-import math.Point3D;
-import math.Ray;
-import math.Vec;
 /**
  * A Scene class containing all the scene objects including camera, lights and
  * surfaces. Some suggestions for code are in comment
@@ -97,7 +95,6 @@ public class Scene implements IInitable {
 	 * @return the closest intersection point to the ray
 	 */
 	public Intersection findIntersection(Ray ray) {
-		//TODO find ray intersection with scene, change the output type, add whatever you need
 		double minDistance = Double.MAX_VALUE;
 		Surface closestSurface = null;
 		Point3D closestIntersection = null;
@@ -141,14 +138,21 @@ public class Scene implements IInitable {
 			
 			for (int i = 0; i < 3; i ++) {
 				double colorValue;
+				eRGB color = eRGB.values()[i];
 				// Once for each of RED, GREEN, BLUE
-				colorValue = calcEmissionColor(intersect.getSurface(), eRGB.values()[i]) +
-						calcAmbientColor(intersect.getSurface(), eRGB.values()[i]);
+				colorValue = calcEmissionColor(intersect.getSurface(), color) +
+						calcAmbientColor(intersect.getSurface(), color);
 				
 				for (int j = 0; j < numOfLights; j++) {
 					Light light = mLights.get(j);
-					colorValue += calcDiffuseLight(intersect, light, eRGB.values()[i]) +
-							calcSpecularLight(intersect, light, eRGB.values()[i]);
+					Ray rayToLight = constructRayToLight(intersect.getHit(), light);
+					
+					// Check for shadows
+					Intersection lightOccluded = findIntersection(rayToLight);
+					if (lightOccluded.getHit() == null) {
+						colorValue += (calcDiffuseLight(intersect, light, color) +
+								calcSpecularLight(intersect, light, color)) * light.getColor().getValue(color);
+					}
 				}
 				
 				if (colorValue > 1) {
@@ -166,6 +170,22 @@ public class Scene implements IInitable {
 		return rgb;
 	}
 	
+	private Ray constructRayToLight(Point3D hit, Light light) {
+		if (light.getClass() == DirectionalLight.class) {
+			DirectionalLight dLight = (DirectionalLight) light;
+			
+			return new Ray(hit, Vec.negate(dLight.getDirection()));
+		} else if (light.getClass() == OmniLight.class) {
+			OmniLight oLight = (OmniLight) light;
+			
+			return new Ray(hit, oLight.getPosition());
+		} else {
+			SpotLight sLight = (SpotLight) light;
+			
+			return new Ray(hit, sLight.getPosition());
+		}
+	}
+
 	private double calcEmissionColor(Surface surface, eRGB color) {
 		return surface.getEmissionColor(color);
 	}
@@ -185,23 +205,27 @@ public class Scene implements IInitable {
 		
 		// All the equation factors
 		double lightIntensity;
-		double diffuseConstant;
+		double diffuseCoefficient;
 		Vec vecToLight;
 		Vec normalAtHit;
 		
 		// According to the type of light calculate the direction to it and it's
 		// intensity
 		if (light.getClass() == DirectionalLight.class) {
-			vecToLight = ((DirectionalLight) light).getDirection();
-			lightIntensity = ((DirectionalLight) light).getLightIntensity(color);
+			DirectionalLight dLight = (DirectionalLight) light;
+			vecToLight = dLight.getDirection();
+			vecToLight.negate();
+			lightIntensity = dLight.getLightIntensity(color);
 			
-		} else if (light.getClass() == OmniLight.class) {			
-			vecToLight = Point3D.getVec(intersection.getHit(), ((OmniLight) light).getPosition());
-			lightIntensity = ((OmniLight) light).getLightIntensity(color, vecToLight.length());
+		} else if (light.getClass() == OmniLight.class) {
+			OmniLight oLight = (OmniLight) light;
+			vecToLight = Point3D.getVec(intersection.getHit(), oLight.getPosition());
+			lightIntensity = oLight.getLightIntensity(color, vecToLight.length());
 			
 		} else { // SpotLight
-			vecToLight = Point3D.getVec(intersection.getHit(), ((SpotLight) light).getPosition());
-			lightIntensity = ((SpotLight) light).getLightIntensity(color, vecToLight.length(), intersection.getHit());
+			SpotLight sLight = (SpotLight) light;
+			vecToLight = Point3D.getVec(intersection.getHit(), sLight.getPosition());
+			lightIntensity = sLight.getLightIntensity(color, vecToLight.length(), intersection.getHit());
 		}
 		
 		normalAtHit = intersection.getSurface().getNormalAtPoint(intersection.getHit());
@@ -210,10 +234,10 @@ public class Scene implements IInitable {
 		vecToLight.normalize();
 		normalAtHit.normalize();
 		
-		diffuseConstant	= intersection.getSurface().getDiffuseColor(color);
+		diffuseCoefficient	= intersection.getSurface().getDiffuseColor(color);
 		
 		// Calculate the diffusive light according to the formula from the lecture (Lec03, slide 44)
-		diffuseIntensity = diffuseConstant * (normalAtHit.dotProd(vecToLight)) * lightIntensity;
+		diffuseIntensity = diffuseCoefficient * (normalAtHit.dotProd(vecToLight)) * lightIntensity;
 		
 		return diffuseIntensity;
 	}
@@ -227,22 +251,26 @@ public class Scene implements IInitable {
 		Vec vecToLightReflection;
 		Vec normalAtHit;
 		double lightIntensity;
-		double specularConstant;
+		double specularCoefficient;
 		double shininess;
 		
 		// According to the type of light calculate the direction to it and it's
 		// intensity
 		if (light.getClass() == DirectionalLight.class) {
-			vecToLight = ((DirectionalLight) light).getDirection();
-			lightIntensity = ((DirectionalLight) light).getLightIntensity(color);
+			DirectionalLight dLight = (DirectionalLight) light;
+			vecToLight = dLight.getDirection();
+			vecToLight.negate();
+			lightIntensity = dLight.getLightIntensity(color);
 			
-		} else if (light.getClass() == OmniLight.class) {			
-			vecToLight = Point3D.getVec(intersection.getHit(), ((OmniLight) light).getPosition());
-			lightIntensity = ((OmniLight) light).getLightIntensity(color, vecToLight.length());
+		} else if (light.getClass() == OmniLight.class) {
+			OmniLight oLight = (OmniLight) light;
+			vecToLight = Point3D.getVec(intersection.getHit(), oLight.getPosition());
+			lightIntensity = oLight.getLightIntensity(color, vecToLight.length());
 			
 		} else { // SpotLight
-			vecToLight = Point3D.getVec(intersection.getHit(), ((SpotLight) light).getPosition());
-			lightIntensity = ((SpotLight) light).getLightIntensity(color, vecToLight.length(), intersection.getHit());
+			SpotLight sLight = (SpotLight) light;
+			vecToLight = Point3D.getVec(intersection.getHit(), sLight.getPosition());
+			lightIntensity = sLight.getLightIntensity(color, vecToLight.length(), intersection.getHit());
 		}
 		
 		normalAtHit = intersection.getSurface().getNormalAtPoint(intersection.getHit());
@@ -255,11 +283,11 @@ public class Scene implements IInitable {
 		vecToLightReflection = vecToLight.reflect(normalAtHit);
 		vecToLightReflection.normalize();
 		
-		specularConstant = intersection.getSurface().getSpecularColor(color);
+		specularCoefficient = intersection.getSurface().getSpecularColor(color);
 		
 		shininess = intersection.getSurface().getShininess();
 		
-		specularIntensity = specularConstant * Math.pow(vecToEye.dotProd(vecToLightReflection), shininess) * lightIntensity;
+		specularIntensity = specularCoefficient * Math.pow(vecToEye.dotProd(vecToLightReflection), shininess) * lightIntensity;
 		
 		return specularIntensity;
 	}
