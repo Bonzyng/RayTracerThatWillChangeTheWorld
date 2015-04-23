@@ -143,13 +143,13 @@ public class Scene implements IInitable {
 		return surface.getEmissionColor(color);
 	}
 	
-	private double calcAmbientColor(int color) {
+	private double calcAmbientColor(Surface surface, int color) {
 		if (color == RED) {
-			return mAmbientLight.x;
+			return mAmbientLight.x * surface.getAmbientColor(RED);
 		} else if (color == GREEN) {
-			return mAmbientLight.y;
+			return mAmbientLight.y * surface.getAmbientColor(GREEN);
 		} else if (color == BLUE) {
-			return mAmbientLight.z;
+			return mAmbientLight.z * surface.getAmbientColor(BLUE);
 		} else {
 			throw new IllegalArgumentException(ERR_COLOR_CODE);
 		}

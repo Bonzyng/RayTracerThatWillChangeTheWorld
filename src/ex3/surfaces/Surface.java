@@ -112,4 +112,16 @@ public abstract class Surface {
 			throw new IllegalArgumentException(ERR_COLOR_CODE);
 		}
 	}
+	
+	public double getAmbientColor(int color) {
+		if (color == RED) {
+			return mMaterialAmbient.x;
+		} else if (color == GREEN) {
+			return mMaterialAmbient.y;
+		} else if (color == BLUE) {
+			return mMaterialAmbient.z;
+		} else {
+			throw new IllegalArgumentException(ERR_COLOR_CODE);
+		}
+	}
 }

@@ -14,6 +14,7 @@ public class ConvexPolygon extends Surface {
 			+ "at least 3 vertices (p0, p1, p2, ...)";
 	
 	public ArrayList<Point3D> mVertices;
+	protected Vec mNormal;
 	
 	@Override
 	public void init(Map<String, String> attributes) {
@@ -37,6 +38,7 @@ public class ConvexPolygon extends Surface {
 	@Override
 	public Point3D intersect(Ray iRay) {
 		Plane plane = new Plane(mVertices.get(0), mVertices.get(1), mVertices.get(2));
+		mNormal = plane.mNormal;
 		
 		Point3D intersectionPoint = plane.intersect(iRay);
 		
@@ -59,6 +61,15 @@ public class ConvexPolygon extends Surface {
 		}
 		
 		return intersectionPoint;
+	}
+	
+	@Override
+	public Vec getNormalAtPoint(Point3D point) {
+		if (mNormal != null) {
+			return mNormal;
+		} else {
+			// create plane, get it's normal
+		}
 	}
 	
 	private boolean checkEdge(Point3D originPoint, Point3D intersectionPoint, 
