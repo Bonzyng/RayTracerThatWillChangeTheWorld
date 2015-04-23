@@ -14,8 +14,8 @@ public class DirectionalLight extends Light {
 	public void init(Map<String, String> attributes) {
 		super.init(attributes);
 		
-		if (attributes.containsKey("direction")) {
-			mDirection = new Vec(attributes.get("direction"));
+		if (attributes.containsKey("dir")) {
+			mDirection = new Vec(attributes.get("dir"));
 			mDirection.normalize();
 		} else {
 			throw new IllegalArgumentException(ERR_DIRECTION_NOT_LEGAL);

@@ -23,11 +23,32 @@ public class OmniLight extends Light {
 			throw new IllegalArgumentException(ERR_POSITION_NOT_LEGAL);
 		}
 		
-		if (attributes.containsKey("attenuation")) {
-			mAttentuation = new Vec(attributes.get("attenuation"));
+		double k_c;
+		String inputFromXML;
+		if (attributes.containsKey("kc")) {
+			inputFromXML = attributes.get("kc");
+			k_c = Double.parseDouble(inputFromXML);
 		} else {
-			mAttentuation = new Vec(1, 0, 0);
+			k_c = 1.0;
 		}
+		
+		double k_l;
+		if (attributes.containsKey("kl")) {
+			inputFromXML = attributes.get("kl");
+			k_l = Double.parseDouble(inputFromXML);
+		} else {
+			k_l = 0.0;
+		}
+		
+		double k_q;
+		if (attributes.containsKey("kq")) {
+			inputFromXML = attributes.get("kq");
+			k_q = Double.parseDouble(inputFromXML);
+		} else {
+			k_q = 0.0;
+		}
+		
+		mAttentuation = new Vec(k_c, k_l, k_q);
 		mAttentuation.normalize();
 	}
 
