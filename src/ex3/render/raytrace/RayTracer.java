@@ -1,10 +1,12 @@
 package ex3.render.raytrace;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
 import math.Point3D;
 import math.Ray;
+import math.Vec;
 import e3.utils.Intersection;
 import ex3.parser.Element;
 import ex3.parser.SceneDescriptor;
@@ -55,14 +57,16 @@ public class RayTracer implements IRenderer {
 	 */
 	@Override
 	public void renderLine(BufferedImage canvas, int line) {
-		// TODO Implement this
 		int canvasWidth = canvas.getWidth();
 		int canvasHeight = canvas.getHeight();
 		for (int x = 0; x < canvasWidth; x++) {
+			if (line == canvasHeight / 2 && x == canvasWidth / 2) {
+				System.out.println("Hi stop here");
+			}
 			Ray ray = mScene.getCamera().constructRayThroughPixel(x, line, canvasHeight, canvasWidth);
-			Intersection intersect = mScene.findIntersection(ray);
-			// Vec color = calcColor(ray, scene)
-			// canvas.setRGB(color)
+			Color color = mScene.calcColor(ray, 0);
+//			int rgb = ((int) color.x << 32) | ((int) color.y << 16) | (int) color.z;
+			canvas.setRGB(x, line, color.getRGB());
 		}
 	}
 

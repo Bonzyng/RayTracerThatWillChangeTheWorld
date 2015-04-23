@@ -25,8 +25,8 @@ public class SpotLight extends Light {
 			throw new IllegalArgumentException(ERR_POSITION_NOT_LEGAL);
 		}
 		
-		if (attributes.containsKey("direction")) {
-			mDirection = new Vec(attributes.get("direction"));
+		if (attributes.containsKey("dir")) {
+			mDirection = new Vec(attributes.get("dir"));
 			mDirection.normalize();
 		} else {
 			throw new IllegalArgumentException(ERR_DIRECTION_NOT_LEGAL);

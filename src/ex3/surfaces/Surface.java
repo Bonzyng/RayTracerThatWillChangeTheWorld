@@ -116,7 +116,7 @@ public abstract class Surface {
 		}
 	}
 	
-	public double getDiffuseValue(eRGB color) {
+	public double getDiffuseColor(eRGB color) {
 		if (color == eRGB.RED) {
 			return mMaterialDiffuse.x;
 		} else if (color == eRGB.GREEN) {
@@ -124,5 +124,19 @@ public abstract class Surface {
 		} else { // return BLUE
 			return mMaterialDiffuse.z;
 		}
+	}
+	
+	public double getSpecularColor(eRGB color) {
+		if (color == eRGB.RED) {
+			return mMaterialSpecular.x;
+		} else if (color == eRGB.GREEN) {
+			return mMaterialSpecular.y;
+		} else { // return BLUE
+			return mMaterialSpecular.z;
+		}
+	}
+	
+	public double getShininess() {
+		return mMaterialShininess;
 	}
 }

@@ -2,6 +2,8 @@ package math;
 
 import java.util.Scanner;
 
+import e3.utils.eRGB;
+
 /**
  * 3D vector class that contains three doubles. Could be used to represent
  * Vectors but also Points and Colors.
@@ -343,5 +345,15 @@ public class Vec {
 	@Override
 	public Vec clone() {
 		return new Vec(this);
+	}
+	
+	public void setValue(eRGB color, double value) {
+		if (color == eRGB.RED) {
+			x = value;
+		} else if (color == eRGB.GREEN) {
+			y = value;
+		} else {
+			z = value;
+		}
 	}
 }

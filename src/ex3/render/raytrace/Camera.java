@@ -123,6 +123,10 @@ public class Camera implements IInitable{
 		
 		return new Ray(mEye, rayVec);
 	}
+	
+	public Point3D getEye() {
+		return mEye;
+	}
 
 		
 }
