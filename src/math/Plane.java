@@ -35,7 +35,8 @@ public class Plane {
 		// the normal and the ray direction vectors is acute (0-90 or 270-360)
 		double angle = Math.acos(nDotD / (mNormal.length() * iRay.mDirectionVector.length()));
 		angle = Math.toDegrees(angle);
-		if (angle > 90 && angle < 270) {
+				
+		if (angle < 90 || angle > 270) {
 			return null;
 		}
 		

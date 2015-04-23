@@ -55,11 +55,11 @@ public class PlaneTest {
 	
 	@Test
 	public void testPlaneRayIntersection() {
-		Point3D p1 = new Point3D(1, 0, 0);
-		Point3D p2 = new Point3D(3, 2, 2);
-		Point3D p3 = new Point3D(0, 2, 4);
+		Point3D p1 = new Point3D(-0.5, 1, -2);
+		Point3D p2 = new Point3D(-1, -1, -2);
+		Point3D p3 = new Point3D(1, -0.3, - 2);
 		Plane p = new Plane(p1, p2, p3);
-		Ray r = new Ray(new Point3D(-1.9, -3.6, -7.4), new Vec(1, 2, 4));
+		Ray r = new Ray(new Point3D(0, 0, 0), new Vec(0, 0, -1));
 		
 		Point3D i = p.intersect(r);
 		assertTrue(i != null);
@@ -71,7 +71,7 @@ public class PlaneTest {
 		Point3D p2 = new Point3D(3, 2, 2);
 		Point3D p3 = new Point3D(0, 2, 4);
 		Plane p = new Plane(p1, p2, p3);
-		Ray r = new Ray(new Point3D(2.1, 4.4, 8.6), new Vec(-1, -2, -4));
+		Ray r = new Ray(new Point3D(2.1, 4.4, 8.6), new Vec(1, 2, 4));
 		
 		Point3D i = p.intersect(r);
 		assertTrue(i == null);
