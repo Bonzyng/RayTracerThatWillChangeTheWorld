@@ -68,8 +68,11 @@ public class ConvexPolygon extends Surface {
 		if (mNormal != null) {
 			return mNormal;
 		} else {
-			// create plane, get it's normal
+			Plane plane = new Plane(mVertices.get(0), mVertices.get(1), mVertices.get(2));
+			mNormal = plane.mNormal;
 		}
+		
+		return mNormal;
 	}
 	
 	private boolean checkEdge(Point3D originPoint, Point3D intersectionPoint, 

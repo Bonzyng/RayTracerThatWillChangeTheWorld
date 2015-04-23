@@ -88,4 +88,9 @@ public class Sphere extends Surface {
 			return null;
 		}
 	}
+	
+	@Override
+	public Vec getNormalAtPoint(Point3D point) {
+		return Point3D.getVec(mCenter, point);
+	}
 }
