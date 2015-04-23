@@ -1,6 +1,8 @@
 package ex3.light;
 
 import java.util.Map;
+
+import e3.utils.eRGB;
 import math.Vec;
 
 public class DirectionalLight extends Light {
@@ -18,5 +20,19 @@ public class DirectionalLight extends Light {
 		} else {
 			throw new IllegalArgumentException(ERR_DIRECTION_NOT_LEGAL);
 		}
+	}
+
+	public double getLightIntensity(eRGB color, double distance) {
+		if (color == eRGB.RED) {
+			return mColor.x;
+		} else if (color == eRGB.GREEN) {
+			return mColor.y;
+		} else { // Return blue
+			return mColor.z;
+		}
+	}
+	
+	public Vec getDirection() {
+		return mDirection;
 	}
 }
