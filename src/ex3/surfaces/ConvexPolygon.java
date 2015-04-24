@@ -65,9 +65,7 @@ public class ConvexPolygon extends Surface {
 	
 	@Override
 	public Vec getNormalAtPoint(Point3D point) {
-		if (mNormal != null) {
-			return mNormal;
-		} else {
+		if (mNormal == null) {
 			Plane plane = new Plane(mVertices.get(0), mVertices.get(1), mVertices.get(2));
 			mNormal = plane.mNormal;
 		}
