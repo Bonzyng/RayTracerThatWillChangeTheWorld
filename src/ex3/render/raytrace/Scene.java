@@ -32,6 +32,8 @@ public class Scene implements IInitable {
 	private final static String ERR_MISSING_BACKGROUND_TEXTURE = "Error: No background-tex given";
 	private final static String ERR_MAX_RECURSION_NOT_A_NUM = "Error: max-recursion-level value must "
 			+ "be a positive integer";
+	
+	private final static double AIR_REFRACTIVE_INDEX = 1.000293;
 
 	private List<Surface> mSurfaces;
 	private List<Light> mLights;
@@ -185,7 +187,46 @@ public class Scene implements IInitable {
 		Vec newRayDirection = ray.mDirectionVector.reflect(normal);
 		return new Ray(hit, newRayDirection);
 	}
+	
+	private Ray constructThroughRay(Ray ray, Vec normal, Intersection intersect) {
+		
+		// setting the reflective indices for the material the ray is coming to (i) 
+		// to the material of the object it is intersecting (r)
+		double reflectiveIndexI = AIR_REFRACTIVE_INDEX;
+		double reflectiveIndexR = intersect.getSurface().getRefractiveIndex();
+		
+		// L is the vector from the hit point to the origin of the ray
+		Vec L = Vec.negate(ray.mDirectionVector);
+		
+		double fractionOfReflectiveIndecies = reflectiveIndexI / reflectiveIndexR;
+		
+		// calculating the angle between the normal and the vector from hit point to ray
+		// origin (L) (eta_i), and the angle between the normal and the new 
+		// ray constructed to go through the surface
+		double eta_i = Vec.angle(normal, L);
+		double eta_r = Math.sinh(fractionOfReflectiveIndecies * Math.sin(eta_i));
+		
+		// calculating the direction vector of the new ray that goes through the surface
+		// see Lec 3 p.68 (snell's law)
+		Vec newNormal = Vec.scale((fractionOfReflectiveIndecies * Math.cos(eta_i)) - Math.cos(eta_r), normal);
+		Vec T = Vec.sub(newNormal, Vec.scale(fractionOfReflectiveIndecies, L));
+		
+		// construct the new ray
+		Ray throughRay = new Ray(intersect.getHit(), T);
+		
+		// finding the intersection between the new ray and the exit point of the
+		// surface
+		Intersection outIntersection = findIntersection(throughRay);
+		
+		// returning the ray constructed on the other side of the surface
+		// using the original ray's direction vector and the exit point 
+		// from the surface
+		return new Ray(outIntersection.getHit(), ray.mDirectionVector);
+	}
 
+	
+	
+	
 	private Vec calcEmissionColor(Surface surface) {
 		return surface.getEmissionColor();
 	}

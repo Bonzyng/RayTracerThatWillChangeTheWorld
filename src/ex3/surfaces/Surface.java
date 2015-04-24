@@ -154,4 +154,12 @@ public abstract class Surface {
 	public double getReflectance() {
 		return mReflectance;
 	}
+	
+	public double getTranslucency() {
+		return mTranslucency;
+	}
+	
+	public double getRefractiveIndex() {
+		return mRefractiveIndex;
+	}
 }
