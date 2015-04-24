@@ -13,6 +13,11 @@ public abstract class Surface {
 			+ "must be a positive integer";
 	private static final String ERR_REFLECTANCE_NOT_LEGAL = "Error: reflectance "
 			+ "must be a double between 0.0 and 1.0";
+	private static final String ERR_TRANSLUCENCY_NOT_LEGAL = "Error: translucency "
+			+ "must be a double between 0.0 and 1.0";
+	private static final String ERR_REFRACTIVE_INDEX_NOT_LEGAL = "Error: refractive "
+			+ "index must be a double between 1.0 and 4.05";
+	private static final String ERR_NO_REFRACTIVE_INDEX = "Error: no refractive index value given";
 	
 	public static final double EPSILON = 0.000001;
 	
@@ -22,6 +27,8 @@ public abstract class Surface {
 	protected Vec mMaterialEmission;
 	protected int mMaterialShininess;
 	protected double mReflectance;
+	protected double mTranslucency;
+	protected double mRefractiveIndex;
 	
 	public Surface() {}
 	
@@ -78,6 +85,34 @@ public abstract class Surface {
 			}	
 		} else {
 			mReflectance = 0;
+		}
+		
+		if (attributes.containsKey("translucency")) {
+			try {
+				mTranslucency = Double.parseDouble(attributes.get("translucency"));
+				
+				if (mTranslucency > 1.0 || mTranslucency < 0.0) {
+					throw new IllegalArgumentException(ERR_TRANSLUCENCY_NOT_LEGAL);
+				}
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException(ERR_TRANSLUCENCY_NOT_LEGAL);
+			}
+		} else {
+			mTranslucency = 0;
+		}
+		
+		if(attributes.containsKey("refractive-index")) {
+			try {
+				mRefractiveIndex = Double.parseDouble(attributes.get("refractive-index"));
+				
+				if (mRefractiveIndex > 4.05 || mRefractiveIndex < 1.0) {
+					throw new IllegalArgumentException(ERR_REFRACTIVE_INDEX_NOT_LEGAL);
+				}
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException(ERR_REFRACTIVE_INDEX_NOT_LEGAL);
+			}
+		} else {
+			throw new IllegalArgumentException(ERR_NO_REFRACTIVE_INDEX);
 		}
 	}
 	
