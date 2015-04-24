@@ -51,19 +51,21 @@ public class OmniLight extends Light {
 		mAttentuation = new Vec(k_c, k_l, k_q);
 	}
 
-	public double getLightIntensity(eRGB color, double distance) {
-		double intensity;
+	public Vec getLightIntensity(double distance) {
+		Vec intensity = new Vec(mColor);
 		
-		if (color == eRGB.RED) {
-			intensity = mColor.x;
-		} else if (color == eRGB.GREEN) {
-			intensity = mColor.y;
-		} else { // Blue
-			intensity = mColor.z;
-		}
+//		if (color == eRGB.RED) {
+//			intensity = mColor.x;
+//		} else if (color == eRGB.GREEN) {
+//			intensity = mColor.y;
+//		} else { // Blue
+//			intensity = mColor.z;
+//		}
 		
-		// I_0 / (k_c + k_l*d + k_q*d^2) - see p.33 in lec 3 presentation
-		intensity /= (mAttentuation.x + (mAttentuation.y * distance) + (mAttentuation.z * distance * distance));
+		// (k_c + k_l*d + k_q*d^2) - see p.33 in lec 3 presentation
+		double attenuation = 1 / (mAttentuation.x + (mAttentuation.y * distance) + (mAttentuation.z * distance * distance));
+		
+		intensity.scale(attenuation);
 		
 		return intensity;
 	}

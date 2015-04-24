@@ -22,14 +22,15 @@ public class DirectionalLight extends Light {
 		}
 	}
 
-	public double getLightIntensity(eRGB color) {
-		if (color == eRGB.RED) {
-			return mColor.x;
-		} else if (color == eRGB.GREEN) {
-			return mColor.y;
-		} else { // Return blue
-			return mColor.z;
-		}
+	public Vec getLightIntensity() {
+		return new Vec(mColor);
+//		if (color == eRGB.RED) {
+//			return mColor.x;
+//		} else if (color == eRGB.GREEN) {
+//			return mColor.y;
+//		} else { // Return blue
+//			return mColor.z;
+//		}
 	}
 	
 	public Vec getDirection() {
