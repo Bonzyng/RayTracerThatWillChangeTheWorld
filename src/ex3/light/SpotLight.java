@@ -10,6 +10,8 @@ public class SpotLight extends Light {
 	
 	private static final String ERR_DIRECTION_NOT_LEGAL = "Error: direction must be a 3D coordinate";
 	private static final String ERR_POSITION_NOT_LEGAL = "Error: Position must be a 3D point";
+	private static final String ERR_COEFFICIENT_NOT_LEGAL = "Error: coefficent must be a double";
+
 
 	private Point3D mPosition;
 	private Vec mDirection;
@@ -36,23 +38,35 @@ public class SpotLight extends Light {
 		String inputFromXML;
 		if (attributes.containsKey("kc")) {
 			inputFromXML = attributes.get("kc");
-			k_c = Double.parseDouble(inputFromXML);
+			try {
+				k_c = Double.parseDouble(inputFromXML);
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException(ERR_COEFFICIENT_NOT_LEGAL);
+			}
 		} else {
-			k_c = 0.0;
+			k_c = 1.0;
 		}
-		
+
 		double k_l;
 		if (attributes.containsKey("kl")) {
 			inputFromXML = attributes.get("kl");
-			k_l = Double.parseDouble(inputFromXML);
+			try {
+				k_l = Double.parseDouble(inputFromXML);
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException(ERR_COEFFICIENT_NOT_LEGAL);
+			}
 		} else {
 			k_l = 0.0;
 		}
-		
+
 		double k_q;
 		if (attributes.containsKey("kq")) {
 			inputFromXML = attributes.get("kq");
-			k_q = Double.parseDouble(inputFromXML);
+			try {
+				k_q = Double.parseDouble(inputFromXML);
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException(ERR_COEFFICIENT_NOT_LEGAL);
+			}
 		} else {
 			k_q = 0.0;
 		}

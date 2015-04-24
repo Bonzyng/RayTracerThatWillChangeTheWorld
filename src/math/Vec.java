@@ -212,6 +212,10 @@ public class Vec {
 	public final double angle(Vec v1) {
 		return Math.acos(dotProd(v1) / (length() * v1.length()));
 	}
+	
+	static public double angle(Vec v1, Vec v2) {
+		return Math.acos(dotProd(v1, v2) / (v1.length() * v2.length()));
+	}
 
 	/**
 	 * Computes the Euclidean distance between two points
