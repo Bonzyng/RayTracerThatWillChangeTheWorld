@@ -96,29 +96,9 @@ public abstract class Surface {
 	 */
 	public abstract Vec getNormalAtPoint(Point3D point);
 	
-//	public double getEmissionColor(eRGB color) {
-//		if (color == eRGB.RED) {
-//			return mMaterialEmission.x;
-//		} else if (color == eRGB.GREEN) {
-//			return mMaterialEmission.y;
-//		} else { // return BLUE
-//			return mMaterialEmission.z;
-//		}
-//	}
-	
 	public Vec getEmissionColor() {
 		return new Vec(mMaterialEmission);
 	}
-	
-//	public double getAmbientColor(eRGB color) {
-//		if (color == eRGB.RED) {
-//			return mMaterialAmbient.x;
-//		} else if (color == eRGB.GREEN) {
-//			return mMaterialAmbient.y;
-//		} else { // return BLUE
-//			return mMaterialAmbient.z;
-//		}
-//	}
 	
 	public Vec getAmbientColor() {
 		return new Vec(mMaterialAmbient);
@@ -126,24 +106,10 @@ public abstract class Surface {
 	
 	public Vec getDiffuseColor() {
 		return new Vec(mMaterialDiffuse);
-//		if (color == eRGB.RED) {
-//			return mMaterialDiffuse.x;
-//		} else if (color == eRGB.GREEN) {
-//			return mMaterialDiffuse.y;
-//		} else { // return BLUE
-//			return mMaterialDiffuse.z;
-//		}
 	}
 	
 	public Vec getSpecularColor() {
 		return new Vec(mMaterialSpecular);
-//		if (color == eRGB.RED) {
-//			return mMaterialSpecular.x;
-//		} else if (color == eRGB.GREEN) {
-//			return mMaterialSpecular.y;
-//		} else { // return BLUE
-//			return mMaterialSpecular.z;
-//		}
 	}
 	
 	public double getShininess() {

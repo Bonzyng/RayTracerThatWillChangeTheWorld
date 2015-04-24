@@ -156,50 +156,10 @@ public class Scene implements IInitable {
 				}
 			}
 			
-//			ensureColorValuesLegal(rgb);
-						
+			ensureColorValuesLegal(rgb);						
 		}
 		
 		return rgb;
-			
-//			for (int i = 0; i < 3; i ++) {
-//				double colorValue = 0;
-//				eRGB color = eRGB.values()[i];
-//				// Once for each of RED, GREEN, BLUE
-//				colorValue = calcEmissionColor(intersect.getSurface(), color) +
-//						calcAmbientColor(intersect.getSurface(), color);
-//				
-//				for (int j = 0; j < numOfLights; j++) {
-//					Light light = mLights.get(j);
-//					Ray rayToLight = constructRayToLight(intersect.getHit(), light);
-//					
-//					// Check for shadows
-//					Intersection lightOccluded = findIntersection(rayToLight);
-//					if (lightOccluded.getHit() == null) {
-//						colorValue += (calcDiffuseLight(intersect, light, color) +
-//								calcSpecularLight(intersect, light, color, ray)) * light.getColor().getValue(color);
-//						
-//						// If we reached the last recursion level, don't cast new rays
-//							Vec normal = intersect.getSurface().getNormalAtPoint(intersect.getHit());
-//							Ray outRay = new Ray(intersect.getHit(), ray.mDirectionVector.reflect(normal));
-//							double c = calcColor(outRay, level + 1).getRGBColorComponents(null)[i];
-//							colorValue += intersect.getSurface().getReflectance() * c;			
-//					}
-//				}
-//				
-//				if (colorValue > 1) {
-//					colorValue = 1;
-//				}
-//				
-//				if (colorValue < 0) {
-//					colorValue = 0;
-//				}
-//				colors[i] = colorValue;
-//			}
-////			System.out.println(colors[0] + " " + colors[1] + " " + colors[2]);
-//			rgb = new Color((float) colors[0], (float) colors[1], (float) colors[2]);
-//		}
-//		return rgb;
 	}
 	
 	// Used to check if the light to an intersection point is blocked by another
@@ -232,13 +192,6 @@ public class Scene implements IInitable {
 	
 	private Vec calcAmbientColor(Surface surface) {
 		return Vec.scale(mAmbientLight, surface.getAmbientColor());
-//		if (color == eRGB.RED) {
-//			return mAmbientLight.x * surface.getAmbientColor(color);
-//		} else if (color == eRGB.GREEN) {
-//			return mAmbientLight.y * surface.getAmbientColor(color);
-//		} else  { // return BLUE
-//			return mAmbientLight.z * surface.getAmbientColor(color);
-//		}
 	}
 	
 	private Vec calcDiffuseColor(Intersection intersection, Light light) {
@@ -398,5 +351,25 @@ public class Scene implements IInitable {
 		return mCamera;
 	}
 	
-	private void ensureColorValuesLegal() {}
+	private void ensureColorValuesLegal(Vec rgb) {
+		if (rgb.x > 1) {
+			rgb.x = 1;
+		}
+		if (rgb.y > 1) {
+			rgb.y = 1;
+		}
+		if (rgb.z > 1) {
+			rgb.z = 1;
+		}
+		
+		if (rgb.x < 0) {
+			rgb.x = 0;
+		}
+		if (rgb.y < 0) {
+			rgb.y = 0;
+		}
+		if (rgb.z < 0) {
+			rgb.z = 0;
+		}
+	}
 }

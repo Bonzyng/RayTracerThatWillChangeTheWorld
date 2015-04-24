@@ -67,14 +67,6 @@ public class SpotLight extends Light {
 		Vec numerator;
 		double attenuation;
 		
-//		if (color == eRGB.RED) {
-//			intensity = mColor.x;
-//		} else if (color == eRGB.GREEN) {
-//			intensity = mColor.y;
-//		} else { // Blue
-//			intensity = mColor.z;
-//		}
-		
 		// I_0 * (D*L)
 		numerator = Vec.scale(Vec.dotProd(mDirection, vecToHit), intensity);
 		

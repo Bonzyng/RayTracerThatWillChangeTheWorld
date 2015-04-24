@@ -53,17 +53,10 @@ public class OmniLight extends Light {
 
 	public Vec getLightIntensity(double distance) {
 		Vec intensity = new Vec(mColor);
-		
-//		if (color == eRGB.RED) {
-//			intensity = mColor.x;
-//		} else if (color == eRGB.GREEN) {
-//			intensity = mColor.y;
-//		} else { // Blue
-//			intensity = mColor.z;
-//		}
+		double attenuation;
 		
 		// (k_c + k_l*d + k_q*d^2) - see p.33 in lec 3 presentation
-		double attenuation = 1 / (mAttentuation.x + (mAttentuation.y * distance) + (mAttentuation.z * distance * distance));
+		attenuation = 1 / (mAttentuation.x + (mAttentuation.y * distance) + (mAttentuation.z * distance * distance));
 		
 		intensity.scale(attenuation);
 		
