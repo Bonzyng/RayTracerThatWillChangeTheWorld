@@ -2,7 +2,6 @@ package ex3.surfaces;
 
 import java.util.Map;
 
-import e3.utils.eRGB;
 import math.Point3D;
 import math.Ray;
 import math.Vec;

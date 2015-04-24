@@ -1,6 +1,5 @@
 package ex3.render.raytrace;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,6 @@ import math.Point3D;
 import math.Ray;
 import math.Vec;
 import e3.utils.Intersection;
-import e3.utils.eRGB;
 import ex3.light.DirectionalLight;
 import ex3.light.Light;
 import ex3.light.OmniLight;
@@ -34,6 +32,7 @@ public class Scene implements IInitable {
 			+ "be a positive integer";
 	
 	private final static double AIR_REFRACTIVE_INDEX = 1.000293;
+	private final static double EPSILON = 0.000001;
 
 	private List<Surface> mSurfaces;
 	private List<Light> mLights;
@@ -115,7 +114,7 @@ public class Scene implements IInitable {
 			if (intersection != null) {
 				double distance = intersection.distance(ray.mOriginPoint);
 				
-				if (distance < minDistance) {
+				if (distance < minDistance && distance > EPSILON) {
 					minDistance = distance;
 					closestSurface = surface;
 					closestIntersection = intersection;
@@ -136,29 +135,44 @@ public class Scene implements IInitable {
 		
 		Intersection intersect = findIntersection(ray);
 		
-		Vec rgb = new Vec(mBackgroundColor);
+		Vec rgb = new Vec(mBackgroundColor); // Sets default color in case no intersection is found
 				
-		if (intersect.getHit() != null) {
+		Point3D rayHitPoint = intersect.getHit();
+		
+		if (rayHitPoint != null) {
+			Surface surfaceHit = intersect.getSurface();
 			int numOfLights = mLights.size();
 			
-			rgb = Vec.add(calcEmissionColor(intersect.getSurface()), calcAmbientColor(intersect.getSurface()));
+			rgb = Vec.add(calcEmissionColor(surfaceHit), calcAmbientColor(surfaceHit));
 			
 			for (int i = 0; i < numOfLights; i++) {
 				Light light = mLights.get(i);
 				
-				Ray rayToLight = constructRayToLight(intersect.getHit(), light);
+				Ray rayToLight = constructRayToLight(rayHitPoint, light);
 				
 				// Check for shadows
 				Intersection lightOccluded = findIntersection(rayToLight);
-				if (lightOccluded.getHit() == null) {
-					rgb.add(calcDiffuseColor(intersect, light));
-					rgb.add(calcSpecularColor(intersect, light, ray));
+				
+				// If the ray to the light hits an object, and if the distance is greater than
+				// a constant EPSILON, consider the light occluded and ignore it
+				Point3D occludingLight = lightOccluded.getHit();
+				if (occludingLight != null) {
+					// Ensure the distance is above some constant minimum EPSILON, to correct
+					// for machine error
+					if (checkMinimumDistanceToLight(occludingLight, rayToLight.mOriginPoint,
+							getDistanceToLight(rayHitPoint, light))) {
+						continue;
+					}
 				}
 				
-				Vec normalAtPoint = intersect.getSurface().getNormalAtPoint(intersect.getHit());
-				Ray outRay = constructOutRay(ray, normalAtPoint, intersect.getHit());
-				rgb.add(Vec.scale(intersect.getSurface().getReflectance(), calcColor(outRay, level + 1)));
+				// Light is not occluded, calculate and add specular and diffusive light
+				rgb.add(calcDiffuseColor(intersect, light));
+				rgb.add(calcSpecularColor(intersect, light, ray));							
 			}
+			
+			Vec normalAtPoint = surfaceHit.getNormalAtPoint(rayHitPoint);
+			Ray outRay = constructOutRay(ray, normalAtPoint, rayHitPoint);
+			rgb.add(Vec.scale(surfaceHit.getReflectance(), calcColor(outRay, level + 1)));
 			
 			ensureColorValuesLegal(rgb);						
 		}
@@ -166,6 +180,83 @@ public class Scene implements IInitable {
 		return rgb;
 	}
 	
+	/**
+	 * Add objects to the scene by name
+	 * 
+	 * @param name Object's name
+	 * @param attributes Object's attributes
+	 */
+	public void addObjectByName(String name, Map<String, String> attributes) {		
+		Surface surface = null;
+		Light light = null;
+	
+		// Check if element is a surface. If yes, initialize the corresponding object
+		if ("sphere".equals(name)) {
+			surface = new Sphere();
+		} else if ("disc".equals(name)) {
+			surface = new Disc();
+		} else if ("convexpolygon".equals(name)) {
+			surface = new ConvexPolygon();
+		} else if ("triangle".equals(name)) {
+			surface = new Triangle();
+		}
+		
+		// Check if element is a light. If yes, initialize the corresponding object
+		if ("omni-light".equals(name)) {
+			light = new OmniLight();
+		} else if ("dir-light".equals(name)) {
+			light = new DirectionalLight();
+		} else if ("spot-light".equals(name)) {
+			light = new SpotLight();
+		}
+
+		//adds a surface to the list of surfaces
+		if (surface != null) {
+			surface.init(attributes);
+			mSurfaces.add(surface);
+		}
+		
+		// adds a light to the list of lights
+		if (light != null) {
+			light.init(attributes);
+			mLights.add(light);
+		}
+
+	}
+
+	public void setCameraAttributes(Map<String, String> attributes) {
+		mCamera.init(attributes);
+	}
+	
+	public Camera getCamera() {
+		return mCamera;
+	}
+	
+	/* ******************************
+	 * ***** PRIVATE HELPERS ********
+	 * *****************************/
+	
+	private boolean checkMinimumDistanceToLight(Point3D occludingLight,
+			Point3D rayToLightOrigin, double distanceToLight) {
+		
+		double distanceRayToOcclusion = Point3D.distance(rayToLightOrigin, occludingLight);
+		
+		return (distanceToLight > distanceRayToOcclusion + EPSILON) && (distanceRayToOcclusion > EPSILON);
+	}
+
+	private double getDistanceToLight(Point3D point, Light light) {
+		double distance;
+		if (light.getClass() == DirectionalLight.class) {
+			distance = Double.MAX_VALUE;
+		} else if (light.getClass() == OmniLight.class) {
+			distance = Point3D.distance(point, ((OmniLight) light).getPosition());
+		} else {
+			distance = Point3D.distance(point, ((SpotLight) light).getPosition());
+		}
+		
+		return distance;
+	}
+
 	// Used to check if the light to an intersection point is blocked by another
 	// object or not
 	private Ray constructRayToLight(Point3D hit, Light light) {
@@ -187,7 +278,6 @@ public class Scene implements IInitable {
 	// Used to create the reflective ray
 	private Ray constructOutRay(Ray ray, Vec normal, Point3D hit) {
 		Vec newRayDirection = ray.mDirectionVector.reflect(normal);
-		newRayDirection.negate();
 		return new Ray(hit, newRayDirection);
 	}
 	
@@ -225,10 +315,7 @@ public class Scene implements IInitable {
 		// using the original ray's direction vector and the exit point 
 		// from the surface
 		return new Ray(outIntersection.getHit(), ray.mDirectionVector);
-	}
-
-	
-	
+	}	
 	
 	private Vec calcEmissionColor(Surface surface) {
 		return surface.getEmissionColor();
@@ -320,7 +407,6 @@ public class Scene implements IInitable {
 		normalAtHit.normalize();
 		vecToLight.normalize();
 		
-//		vecToRayOrigin = Point3D.getVec(intersection.getHit(), ray.mOriginPoint);
 		vecToRayOrigin = Vec.negate(ray.mDirectionVector);
 
 		vecToLightReflection = vecToLight.reflect(normalAtHit);
@@ -338,8 +424,6 @@ public class Scene implements IInitable {
 			dotProd = 0;
 		}
 		
-		//specularCoefficient * Math.pow(dotProd, shininess) * lightIntensity;
-
 		specularIntensity = Vec.scale(Math.pow(dotProd, shininess), specularCoefficient);
 		specularIntensity.scale(lightIntensity);
 		
@@ -347,57 +431,6 @@ public class Scene implements IInitable {
 		return specularIntensity;
 	}
 
-	/**
-	 * Add objects to the scene by name
-	 * 
-	 * @param name Object's name
-	 * @param attributes Object's attributes
-	 */
-	public void addObjectByName(String name, Map<String, String> attributes) {		
-		Surface surface = null;
-		Light light = null;
-	
-		// Check if element is a surface. If yes, initialize the corresponding object
-		if ("sphere".equals(name)) {
-			surface = new Sphere();
-		} else if ("disc".equals(name)) {
-			surface = new Disc();
-		} else if ("convexpolygon".equals(name)) {
-			surface = new ConvexPolygon();
-		} else if ("triangle".equals(name)) {
-			surface = new Triangle();
-		}
-		
-		// Check if element is a light. If yes, initialize the corresponding object
-		if ("omni-light".equals(name)) {
-			light = new OmniLight();
-		} else if ("dir-light".equals(name)) {
-			light = new DirectionalLight();
-		} else if ("spot-light".equals(name)) {
-			light = new SpotLight();
-		}
-
-		//adds a surface to the list of surfaces
-		if (surface != null) {
-			surface.init(attributes);
-			mSurfaces.add(surface);
-		}
-		
-		// adds a light to the list of lights
-		if (light != null) {
-			light.init(attributes);
-			mLights.add(light);
-		}
-
-	}
-
-	public void setCameraAttributes(Map<String, String> attributes) {
-		mCamera.init(attributes);
-	}
-	
-	public Camera getCamera() {
-		return mCamera;
-	}
 	
 	private void ensureColorValuesLegal(Vec rgb) {
 		if (rgb.x > 1) {

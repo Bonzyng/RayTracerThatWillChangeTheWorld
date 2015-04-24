@@ -64,13 +64,16 @@ public class Sphere extends Surface {
 		
 		// If d^2 is greater than r^s (mRadius^2) than d is
 		// out of the circle, and ray does not intersect
-		if ((d * d) > (mRadius * mRadius)) {
+		double dSqr = d * d;
+		double radiusSqr = mRadius * mRadius;
+		
+		if (dSqr > radiusSqr) {
 			return null;
 		}
 		
 		// Edge length between center of the ray segment and the possible intersection
 		// points
-		double t_h = Math.sqrt((mRadius * mRadius) - (d * d));
+		double t_h = Math.sqrt(radiusSqr - dSqr);
 		
 		// Intersection points of the ray with the sphere
 		double p1 = t_m - t_h;
@@ -91,6 +94,8 @@ public class Sphere extends Surface {
 	
 	@Override
 	public Vec getNormalAtPoint(Point3D point) {
-		return Point3D.getVec(mCenter, point);
+		Vec normal = Point3D.getVec(mCenter, point);
+		normal.normalize();
+		return normal;
 	}
 }
