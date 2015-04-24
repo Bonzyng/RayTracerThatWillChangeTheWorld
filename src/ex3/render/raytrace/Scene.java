@@ -137,9 +137,7 @@ public class Scene implements IInitable {
 		Intersection intersect = findIntersection(ray);
 		
 		Vec rgb = new Vec(mBackgroundColor);
-		
-//		Color rgb = new Color((float) mBackgroundColor.x, (float) mBackgroundColor.y, (float) mBackgroundColor.z);
-		
+				
 		if (intersect.getHit() != null) {
 			int numOfLights = mLights.size();
 			
@@ -156,6 +154,10 @@ public class Scene implements IInitable {
 					rgb.add(calcDiffuseColor(intersect, light));
 					rgb.add(calcSpecularColor(intersect, light, ray));
 				}
+				
+				Vec normalAtPoint = intersect.getSurface().getNormalAtPoint(intersect.getHit());
+				Ray outRay = constructOutRay(ray, normalAtPoint, intersect.getHit());
+				rgb.add(Vec.scale(intersect.getSurface().getReflectance(), calcColor(outRay, level + 1)));
 			}
 			
 			ensureColorValuesLegal(rgb);						
@@ -174,17 +176,18 @@ public class Scene implements IInitable {
 		} else if (light.getClass() == OmniLight.class) {
 			OmniLight oLight = (OmniLight) light;
 			
-			return new Ray(hit, oLight.getPosition());
+			return new Ray(hit, Point3D.getVec(hit, oLight.getPosition()));
 		} else {
 			SpotLight sLight = (SpotLight) light;
 			
-			return new Ray(hit, sLight.getPosition());
+			return new Ray(hit, Point3D.getVec(hit, sLight.getPosition()));
 		}
 	}
 	
 	// Used to create the reflective ray
 	private Ray constructOutRay(Ray ray, Vec normal, Point3D hit) {
 		Vec newRayDirection = ray.mDirectionVector.reflect(normal);
+		newRayDirection.negate();
 		return new Ray(hit, newRayDirection);
 	}
 	
@@ -275,6 +278,8 @@ public class Scene implements IInitable {
 		diffuseIntensity = Vec.scale(diffuseCoefficient, lightIntensity);
 		diffuseIntensity.scale(normalAtHit.dotProd(vecToLight));
 		
+		ensureColorValuesLegal(diffuseIntensity);
+		
 		return diffuseIntensity;
 	}
 	
@@ -315,7 +320,8 @@ public class Scene implements IInitable {
 		normalAtHit.normalize();
 		vecToLight.normalize();
 		
-		vecToRayOrigin = Point3D.getVec(intersection.getHit(), ray.mOriginPoint);
+//		vecToRayOrigin = Point3D.getVec(intersection.getHit(), ray.mOriginPoint);
+		vecToRayOrigin = Vec.negate(ray.mDirectionVector);
 
 		vecToLightReflection = vecToLight.reflect(normalAtHit);
 		vecToLightReflection.normalize();
@@ -337,6 +343,7 @@ public class Scene implements IInitable {
 		specularIntensity = Vec.scale(Math.pow(dotProd, shininess), specularCoefficient);
 		specularIntensity.scale(lightIntensity);
 		
+		ensureColorValuesLegal(specularIntensity);
 		return specularIntensity;
 	}
 

@@ -2,7 +2,6 @@ package ex3.light;
 
 import java.util.Map;
 
-import e3.utils.eRGB;
 import math.Vec;
 
 public class DirectionalLight extends Light {

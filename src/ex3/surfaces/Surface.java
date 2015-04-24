@@ -112,7 +112,8 @@ public abstract class Surface {
 				throw new IllegalArgumentException(ERR_REFRACTIVE_INDEX_NOT_LEGAL);
 			}
 		} else {
-			throw new IllegalArgumentException(ERR_NO_REFRACTIVE_INDEX);
+//			throw new IllegalArgumentException(ERR_NO_REFRACTIVE_INDEX);
+			mRefractiveIndex = 1.0;
 		}
 	}
 	
