@@ -89,10 +89,7 @@ public class Camera implements IInitable{
 		}
 		
 		// Initialize the global image center in 3D space
-		mImageCenter3D = new Point3D(mEye, Vec.scale(mScreenDistance, mToDirection));
-		
-		// Could fix future bug: up.negate()
-		
+		mImageCenter3D = new Point3D(mEye, Vec.scale(mScreenDistance, mToDirection));		
 	}
 	
 	/**
@@ -127,6 +124,46 @@ public class Camera implements IInitable{
 	public Point3D getEye() {
 		return mEye;
 	}
-
+	
+	public Ray superSample(double x, double y, double sampleX, double sampleY, double width, double height, int superSample) {
+		// FIND PIXEL IN THE IMAGE
+		double pixelRatio = mScreenWidth / width;
+		Point3D ImageCenter2D = new Point3D(Math.floor(width / 2), Math.floor(height / 2), 0);
 		
+		Vec scaledRight = Vec.scale((x - ImageCenter2D.x) * pixelRatio, mRightDirection);
+		Vec scaledUp = Vec.scale((y - ImageCenter2D.y) * pixelRatio, mUpDirection);
+		
+		scaledUp.negate(); // Negated to subtract from p
+		
+		// Find point p in relation to the 3D center of the image using the scaled
+		// right and up vectors
+		Point3D pixel = new Point3D(new Point3D(mImageCenter3D, scaledRight), scaledUp);
+		
+		// Find the vector going from the camera eye to the point
+		Vec rayVec = Point3D.getVec(mEye, pixel);
+				
+		Ray ray =  new Ray(mEye, rayVec);
+		
+		// FIND GRID POINT INSIDE THE PIXEL
+		double superSampleRatio = pixelRatio / superSample;
+		Point3D pixelCenter2D = new Point3D((pixelRatio / 2.0), (pixelRatio / 2.0), 0);
+		
+		Vec pixelRightDirection = Vec.crossProd(ray.mDirectionVector, mUpDirection);
+		Vec pixelUpDirection;
+		if (ray.mDirectionVector.dotProd(mUpDirection) != 0) {
+			pixelUpDirection = Vec.crossProd(pixelRightDirection, ray.mDirectionVector);
+		} else {
+			pixelUpDirection = new Vec(mUpDirection);
+		}
+		
+		Vec superScaledRight = Vec.scale((sampleX - pixelCenter2D.x) * superSampleRatio, pixelRightDirection);
+		Vec superScaledUp = Vec.scale((sampleY - pixelCenter2D.y) * superSampleRatio, pixelUpDirection);
+		superScaledUp.negate();
+		
+		Point3D p = new Point3D(new Point3D(pixel, superScaledRight), superScaledUp);
+		
+		Vec superRay = Point3D.getVec(mEye, p);
+		
+		return new Ray(mEye, superRay);
+	}	
 }

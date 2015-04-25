@@ -4,7 +4,7 @@ import math.Point3D;
 import math.Ray;
 import math.Vec;
 
-public class TriangleMesh extends Surface{
+public class TriangleMesh extends Surface {
 
 	@Override
 	public Point3D intersect(Ray iRay) {

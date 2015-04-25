@@ -30,6 +30,7 @@ public class Scene implements IInitable {
 	private final static String ERR_MISSING_BACKGROUND_TEXTURE = "Error: No background-tex given";
 	private final static String ERR_MAX_RECURSION_NOT_A_NUM = "Error: max-recursion-level value must "
 			+ "be a positive integer";
+	private final static String ERR_SUPER_SAMPLE = "Error: super-sample-width must be an integer.";
 	
 	private final static double AIR_REFRACTIVE_INDEX = 1.000293;
 	private final static double EPSILON = 0.000001;
@@ -42,6 +43,7 @@ public class Scene implements IInitable {
 	private String mBackgroundTexture;
 	private int mMaxRecursionLevel;
 	private Vec mAmbientLight;
+	private int mSuperSample;
 
 
 	public Scene() {
@@ -85,6 +87,16 @@ public class Scene implements IInitable {
 			mAmbientLight = new Vec(attributes.get("ambient-light"));
 		} else {
 			mAmbientLight = new Vec(0, 0, 0);
+		}
+		
+		if (attributes.containsKey("super-samp-width")) {
+			try {
+				mSuperSample = Integer.parseInt(attributes.get("super-sample-width"));
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException(ERR_SUPER_SAMPLE);
+			}
+		} else {
+			mSuperSample = 1;
 		}
 		// End populate members
 	}
@@ -174,7 +186,7 @@ public class Scene implements IInitable {
 			Ray outRay = constructOutRay(ray, normalAtPoint, rayHitPoint);
 			rgb.add(Vec.scale(surfaceHit.getReflectance(), calcColor(outRay, level + 1)));
 			
-			ensureColorValuesLegal(rgb);						
+//			ensureColorValuesLegal(rgb);						
 		}
 		
 		return rgb;
@@ -230,6 +242,10 @@ public class Scene implements IInitable {
 	
 	public Camera getCamera() {
 		return mCamera;
+	}
+	
+	public int getSuperSample() {
+		return mSuperSample;
 	}
 	
 	/* ******************************
@@ -411,7 +427,11 @@ public class Scene implements IInitable {
 
 		vecToLightReflection = vecToLight.reflect(normalAtHit);
 		vecToLightReflection.normalize();
-		vecToLightReflection.negate();
+		
+		// If the light is directional, do no negate the reflection. It's already right
+		if (light.getClass() != DirectionalLight.class) {
+			vecToLightReflection.negate(); // to get the reflection of the vector from the light
+		}
 		vecToRayOrigin.normalize();
 		
 		specularCoefficient = intersection.getSurface().getSpecularColor();
@@ -432,7 +452,7 @@ public class Scene implements IInitable {
 	}
 
 	
-	private void ensureColorValuesLegal(Vec rgb) {
+	protected void ensureColorValuesLegal(Vec rgb) {
 		if (rgb.x > 1) {
 			rgb.x = 1;
 		}
