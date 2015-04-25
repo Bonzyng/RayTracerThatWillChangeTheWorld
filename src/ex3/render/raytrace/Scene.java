@@ -39,7 +39,9 @@ public class Scene implements IInitable {
 			+ "be a positive integer";
 	private final static String ERR_SUPER_SAMPLE = "Error: super-sample-width must be an integer.";
 	private final static String ERR_BACKGROUND_FILE = "Error: Cannot read the given background image file. "
-			+ "Please ensure the image file is located within the scenes folder.";
+			+ "Please ensure the image file path is relative to the selected XML's parent folder (i.e for"
+			+ "/scenes/5_models/5-02_background.xml and scenes/RollingHills.jpg - background-tex must be"
+			+ "../RollingHills.jpg).";
 	
 	private final static double AIR_REFRACTIVE_INDEX = 1.000293;
 	private final static double EPSILON = 0.000001;
