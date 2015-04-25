@@ -1,4 +1,4 @@
-package e3.utils;
+package ex3.utils;
 
 import math.Point3D;
 import ex3.surfaces.Surface;

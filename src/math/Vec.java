@@ -2,7 +2,6 @@ package math;
 
 import java.util.Scanner;
 
-import e3.utils.eRGB;
 
 /**
  * 3D vector class that contains three doubles. Could be used to represent

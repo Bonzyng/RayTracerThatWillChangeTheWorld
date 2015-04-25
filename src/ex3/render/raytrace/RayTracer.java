@@ -30,9 +30,8 @@ public class RayTracer implements IRenderer {
 	 */
 	@Override
 	public void init(SceneDescriptor sceneDesc, int width, int height, File path) {
-		// TODO Implement this
-		//you can initialize your scene object here
 		mScene = new Scene();
+		mScene.setXMLPath(path.getParent());
 		
 		mScene.init(sceneDesc.getSceneAttributes());
 		
@@ -58,9 +57,10 @@ public class RayTracer implements IRenderer {
 		int canvasWidth = canvas.getWidth();
 		int canvasHeight = canvas.getHeight();
 		for (int x = 0; x < canvasWidth; x++) {
-			if (line == canvasHeight / 2 && x == canvasWidth / 2) {
-				System.out.println("Half way there!");
-			}
+			
+//			if (line == canvasHeight / 2 && x == canvasWidth / 2) { // DEBUG HELPER
+//				System.out.println("Half way there!");
+//			}
 			
 			// get the super-sample level from the scene properties
 			int superSample = mScene.getSuperSample();
@@ -74,7 +74,7 @@ public class RayTracer implements IRenderer {
 					// For each grid point, shoot a ray through it, calculate the color
 					// and add to the vector array
 					Ray superRay = mScene.getCamera().superSample(x, line, sampleX, sampleY, canvasWidth, canvasHeight, superSample);
-					Vec color = mScene.calcColor(superRay, 0);
+					Vec color = mScene.calcColor(superRay, 0, x, line);
 					mScene.ensureColorValuesLegal(color);
 					superSamplers[k] = color;
 					k++;
@@ -86,5 +86,9 @@ public class RayTracer implements IRenderer {
 			
 			canvas.setRGB(x, line, rgb.getRGB());
 		}
+	}
+	
+	public Scene getScene() {
+		return mScene;
 	}
 }

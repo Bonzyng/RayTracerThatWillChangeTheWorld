@@ -19,9 +19,7 @@ public class Triangle extends ConvexPolygon {
 		}
 	}
 
-	public Triangle() {
-		// TODO Auto-generated constructor stub
-	}
+	public Triangle() {}
 
 	@Override
 	public void init(Map<String, String> attributes) {

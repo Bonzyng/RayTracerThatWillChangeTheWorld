@@ -30,6 +30,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import ex3.parser.SceneDescriptor;
 import ex3.render.IRenderer;
 import ex3.render.RendererFactory;
+import ex3.render.raytrace.RayTracer;
 
 /**
  * Frame of the main GUI of the application
@@ -235,7 +236,10 @@ public class MainFrame extends JFrame {
 		// Create canvas
 		BufferedImage canvas = new BufferedImage(canvasWidth, canvasHeight,
 				BufferedImage.TYPE_INT_RGB);
-
+		
+		// Resize the background image if one was given
+		((RayTracer) renderer).getScene().resizeBackgroundImg(canvasWidth, canvasHeight);
+		
 		// Render a line and draw to screen immediately
 		for (int y = 0; y < canvas.getHeight(); ++y) {
 			renderer.renderLine(canvas, y);

@@ -51,6 +51,8 @@ public class Plane {
 		}
 	}
 	
+	// Checks whether a point is on the plane or not. Compare to EPSILON to compensate
+	// for computer calculation error
 	public boolean checkPointOnPlane(Point3D point) {
 		Vec vecFromPlanePointToOtherPoint = Point3D.getVec(mPoint, point);
 		vecFromPlanePointToOtherPoint.normalize();

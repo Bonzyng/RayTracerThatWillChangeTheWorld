@@ -1,13 +1,19 @@
 package ex3.render.raytrace;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
+
 import math.Point3D;
 import math.Ray;
 import math.Vec;
-import e3.utils.Intersection;
 import ex3.light.DirectionalLight;
 import ex3.light.Light;
 import ex3.light.OmniLight;
@@ -18,6 +24,7 @@ import ex3.surfaces.Sphere;
 import ex3.surfaces.Surface;
 import ex3.surfaces.Triangle;
 import ex3.surfaces.TriangleMesh;
+import ex3.utils.Intersection;
 /**
  * A Scene class containing all the scene objects including camera, lights and
  * surfaces. Some suggestions for code are in comment
@@ -28,20 +35,23 @@ import ex3.surfaces.TriangleMesh;
  */
 public class Scene implements IInitable {
 	
-	private final static String ERR_MISSING_BACKGROUND_TEXTURE = "Error: No background-tex given";
 	private final static String ERR_MAX_RECURSION_NOT_A_NUM = "Error: max-recursion-level value must "
 			+ "be a positive integer";
 	private final static String ERR_SUPER_SAMPLE = "Error: super-sample-width must be an integer.";
+	private final static String ERR_BACKGROUND_FILE = "Error: Cannot read the given background image file. "
+			+ "Please ensure the image file is located within the scenes folder.";
 	
 	private final static double AIR_REFRACTIVE_INDEX = 1.000293;
 	private final static double EPSILON = 0.000001;
 
+	private String mXMLPath;
+	
 	private List<Surface> mSurfaces;
 	private List<Light> mLights;
 	private Camera mCamera;
 	
 	private Vec mBackgroundColor; // v1 is red, v2 green and v3 blue
-	private String mBackgroundTexture;
+	private BufferedImage mBackground;
 	private int mMaxRecursionLevel;
 	private Vec mAmbientLight;
 	private int mSuperSample;
@@ -63,11 +73,14 @@ public class Scene implements IInitable {
 		}
 		
 		if (attributes.containsKey("background-tex")) {
-			mBackgroundTexture = attributes.get("background-tex");
+			try {
+//				mBackground = ImageIO.read(getClass().getResource(mXMLPath + attributes.get("background-tex")));
+				mBackground = ImageIO.read(new File(mXMLPath + attributes.get("background-tex")));
+			} catch (IOException e) {
+				throw new IllegalArgumentException(ERR_BACKGROUND_FILE);
+			}
 		} else {
-			// TODO: Add default background texture?
-//			throw new IllegalArgumentException(ERR_MISSING_BACKGROUND_TEXTURE);
-			mBackgroundTexture = "";
+			mBackground = null;
 		}
 		
 		if (attributes.containsKey("max-recursion-level")) {
@@ -140,24 +153,40 @@ public class Scene implements IInitable {
 		return intersection;
 	}
 
-	public Vec calcColor(Ray ray, int level) {
+	public Vec calcColor(Ray ray, int level, int width, int height) {
+		Vec rgb = null;
 		
+		// If last level of recursion reached, simply return (0, 0, 0)
 		if (level == mMaxRecursionLevel) {
 			return new Vec(0, 0, 0);
 		}
 		
+		// Check if the ray intersects with any objects
 		Intersection intersect = findIntersection(ray);
-		
-		Vec rgb = new Vec(mBackgroundColor); // Sets default color in case no intersection is found
 				
 		Point3D rayHitPoint = intersect.getHit();
 		
-		if (rayHitPoint != null) {
+		if (rayHitPoint == null) {
+			// Sets default color if no intersection is found
+			if (mBackground != null) {
+				int backgroundRgb = mBackground.getRGB(width, height);
+				double red = ((backgroundRgb >> 16) & 0xFF);
+				red /= 255;
+				double green = ((backgroundRgb >> 8) & 0xFF);
+				green /= 255;
+				double blue = (backgroundRgb & 0xFF);
+				blue /= 255;
+				rgb = new Vec(red, green, blue);
+			} else {
+				rgb = new Vec(mBackgroundColor);
+			} 
+		} else { // The ray hit an object
 			Surface surfaceHit = intersect.getSurface();
 			int numOfLights = mLights.size();
 			
 			rgb = Vec.add(calcEmissionColor(surfaceHit), calcAmbientColor(surfaceHit));
 			
+			// For each light source, calculate the diffuse and specular colors
 			for (int i = 0; i < numOfLights; i++) {
 				Light light = mLights.get(i);
 				
@@ -184,11 +213,11 @@ public class Scene implements IInitable {
 				rgb.add(specularColor);							
 			}
 			
+			// Calculate the reflective ray color recursively
 			Vec normalAtPoint = surfaceHit.getNormalAtPoint(rayHitPoint);
 			Ray outRay = constructOutRay(ray, normalAtPoint, rayHitPoint);
-			rgb.add(Vec.scale(surfaceHit.getReflectance(), calcColor(outRay, level + 1)));
+			rgb.add(Vec.scale(surfaceHit.getReflectance(), calcColor(outRay, level + 1, width, height)));
 			
-//			ensureColorValuesLegal(rgb);						
 		}
 		
 		return rgb;
@@ -229,15 +258,7 @@ public class Scene implements IInitable {
 		//adds a surface to the list of surfaces
 		if (surface != null) {
 			surface.init(attributes);
-//			if (surface.getClass() == TriangleMesh.class) {
-//				ArrayList<Triangle> triangles = ((TriangleMesh) surface).mTriangles;
-//				for (int i = 0; i < triangles.size(); i++) {
-//					mSurfaces.add(triangles.get(i));
-//				}
-//			} else {
-				mSurfaces.add(surface);
-//			}
-			
+				mSurfaces.add(surface);			
 		}
 		
 		// adds a light to the list of lights
@@ -484,5 +505,22 @@ public class Scene implements IInitable {
 		if (rgb.z < 0) {
 			rgb.z = 0;
 		}
+	}
+	
+	public void resizeBackgroundImg(int width, int height) {
+		if (mBackground == null) {
+			return;
+		}
+		
+		Image tmp = mBackground.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+		mBackground = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		
+		Graphics2D g2d = mBackground.createGraphics();
+		g2d.drawImage(tmp, 0, 0, null);
+		g2d.dispose();
+	}
+	
+	protected void setXMLPath(String path) {
+		mXMLPath = path + "/";
 	}
 }
