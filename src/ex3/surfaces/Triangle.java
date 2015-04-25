@@ -6,23 +6,33 @@ import math.Point3D;
 import math.Ray;
 
 public class Triangle extends ConvexPolygon {
-	
+
 	private static final String ERR_TOO_MANY_VERTICES = "Error: triangle may must "
 			+ "have exactly 3 vertices (p0, p1, p2)";
-	
+
+	public Triangle(Point3D[] vertices) {
+		for (int i = 0; i < 3; i++) {
+			mVertices.add(vertices[i]);
+		}
+	}
+
+	public Triangle() {
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public void init(Map<String, String> attributes) {
 		super.init(attributes);
-		
+
 		if (mVertices.size() != 3) {
 			throw new IllegalArgumentException(ERR_TOO_MANY_VERTICES);
 		}
 	}
-	
+
 	@Override
 	public Point3D intersect(Ray iRay) {
 		Point3D intersectionPoint = super.intersect(iRay);
-		
+
 		return intersectionPoint;
 	}
 }

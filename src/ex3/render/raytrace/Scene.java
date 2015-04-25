@@ -17,6 +17,7 @@ import ex3.surfaces.Disc;
 import ex3.surfaces.Sphere;
 import ex3.surfaces.Surface;
 import ex3.surfaces.Triangle;
+import ex3.surfaces.TriangleMesh;
 /**
  * A Scene class containing all the scene objects including camera, lights and
  * surfaces. Some suggestions for code are in comment
@@ -199,6 +200,8 @@ public class Scene implements IInitable {
 			surface = new ConvexPolygon();
 		} else if ("triangle".equals(name)) {
 			surface = new Triangle();
+		} else if ("trimesh".equals(name)) {
+			surface = new TriangleMesh();
 		}
 		
 		// Check if element is a light. If yes, initialize the corresponding object
