@@ -1,5 +1,6 @@
 package ex3.surfaces;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import math.Point3D;
@@ -11,6 +12,8 @@ public class Triangle extends ConvexPolygon {
 			+ "have exactly 3 vertices (p0, p1, p2)";
 
 	public Triangle(Point3D[] vertices) {
+		mVertices = new ArrayList<Point3D>();
+		
 		for (int i = 0; i < 3; i++) {
 			mVertices.add(vertices[i]);
 		}

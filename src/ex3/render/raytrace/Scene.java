@@ -180,7 +180,8 @@ public class Scene implements IInitable {
 				
 				// Light is not occluded, calculate and add specular and diffusive light
 				rgb.add(calcDiffuseColor(intersect, light));
-				rgb.add(calcSpecularColor(intersect, light, ray));							
+				Vec specularColor = calcSpecularColor(intersect, light, ray);
+				rgb.add(specularColor);							
 			}
 			
 			Vec normalAtPoint = surfaceHit.getNormalAtPoint(rayHitPoint);

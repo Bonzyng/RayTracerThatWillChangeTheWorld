@@ -58,7 +58,7 @@ public class RayTracer implements IRenderer {
 		int canvasWidth = canvas.getWidth();
 		int canvasHeight = canvas.getHeight();
 		for (int x = 0; x < canvasWidth; x++) {
-			if (line == 126 && x == 291) {
+			if (line == canvasHeight / 2 && x == canvasWidth / 2) {
 				System.out.println("Half way there!");
 			}
 //			Ray ray = mScene.getCamera().constructRayThroughPixel(x, line, canvasHeight, canvasWidth);
