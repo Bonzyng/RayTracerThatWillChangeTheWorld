@@ -58,17 +58,30 @@ public class RayTracer implements IRenderer {
 		int canvasWidth = canvas.getWidth();
 		int canvasHeight = canvas.getHeight();
 		for (int x = 0; x < canvasWidth; x++) {
-			if (line == 148 && x == 275) {
+			if (line == 126 && x == 291) {
 				System.out.println("Half way there!");
 			}
-			Ray ray = mScene.getCamera().constructRayThroughPixel(x, line, canvasHeight, canvasWidth);
-			Vec color = mScene.calcColor(ray, 0);
+//			Ray ray = mScene.getCamera().constructRayThroughPixel(x, line, canvasHeight, canvasWidth);
+			int superSample = mScene.getSuperSample();
+			Vec[] superSamplers = new Vec[superSample * superSample];
+			int k = 0;
+			for (int sampleY = 0; sampleY < superSample; sampleY++) {
+				for (int sampleX = 0; sampleX < superSample; sampleX++) {
+//					System.out.println("x: " + x + " y: " + line);
+					Ray superRay = mScene.getCamera().superSample(x, line, sampleX, sampleY, canvasWidth, canvasHeight, superSample);
+					Vec color = mScene.calcColor(superRay, 0);
+					mScene.ensureColorValuesLegal(color);
+//					System.out.println(color);
+					superSamplers[k] = color;
+					k++;
+				}
+			}
+			Vec color = Vec.getAverage(superSamplers);
+//			Vec color = mScene.calcColor(ray, 0);
+//			mScene.ensureColorValuesLegal(color);
+//			System.out.println(color); // DEBUG
 			Color rgb = new Color((float) color.x, (float) color.y, (float) color.z);
 			
-//			System.out.println("x: " + x + " y: " + line + "color red: " + color.getRed() + " green: " + color.getGreen() + " blue: " + color.getBlue());
-//			if (color.getRed() == 255 && color.getGreen() == 255 && color.getBlue() == 255) {
-//				System.out.println("Stop");
-//			}
 			canvas.setRGB(x, line, rgb.getRGB());
 		}
 	}

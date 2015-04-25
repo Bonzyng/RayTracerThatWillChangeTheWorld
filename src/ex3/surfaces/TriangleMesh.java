@@ -8,8 +8,8 @@ import math.Point3D;
 import math.Ray;
 import math.Vec;
 
-public class TriangleMesh extends Surface{
-	
+public class TriangleMesh extends Surface {
+
 	public ArrayList<Triangle> mTriangles;
 
 	public void init(Map<String, String> attributes) {

@@ -351,23 +351,22 @@ public class Vec {
 		return new Vec(this);
 	}
 	
-	public void setValue(eRGB color, double value) {
-		if (color == eRGB.RED) {
-			x = value;
-		} else if (color == eRGB.GREEN) {
-			y = value;
-		} else {
-			z = value;
+	public static Vec getAverage(Vec[] vectors) {
+		double avgX = 0;
+		double avgY = 0;
+		double avgZ = 0;
+		int numOfVectors = vectors.length;
+		
+		for(int i = 0; i < numOfVectors; i++) {
+			avgX += vectors[i].x;
+			avgY += vectors[i].y;
+			avgZ += vectors[i].z;
 		}
-	}
-	
-	public double getValue(eRGB color) {
-		if (color == eRGB.RED) {
-			return x;
-		} else if (color == eRGB.GREEN) {
-			return y;
-		} else {
-			return z;
-		}
+		
+		avgX /= (double) numOfVectors;
+		avgY /= (double) numOfVectors;
+		avgZ /= (double) numOfVectors;
+		
+		return new Vec(avgX, avgY, avgZ);		
 	}
 }
