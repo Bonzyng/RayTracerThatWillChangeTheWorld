@@ -33,5 +33,4 @@ public class TriangleMesh extends Surface{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

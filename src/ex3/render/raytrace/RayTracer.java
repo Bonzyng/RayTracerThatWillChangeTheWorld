@@ -4,10 +4,8 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-import math.Point3D;
 import math.Ray;
 import math.Vec;
-import e3.utils.Intersection;
 import ex3.parser.Element;
 import ex3.parser.SceneDescriptor;
 import ex3.render.IRenderer;
@@ -60,7 +58,7 @@ public class RayTracer implements IRenderer {
 		int canvasWidth = canvas.getWidth();
 		int canvasHeight = canvas.getHeight();
 		for (int x = 0; x < canvasWidth; x++) {
-			if (line == 30 && x == 241) {
+			if (line == 148 && x == 275) {
 				System.out.println("Half way there!");
 			}
 			Ray ray = mScene.getCamera().constructRayThroughPixel(x, line, canvasHeight, canvasWidth);
