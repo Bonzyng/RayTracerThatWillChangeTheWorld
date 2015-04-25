@@ -50,4 +50,15 @@ public class Plane {
 			return null;
 		}
 	}
+	
+	public boolean checkPointOnPlane(Point3D point) {
+		Vec vecFromPlanePointToOtherPoint = Point3D.getVec(mPoint, point);
+		vecFromPlanePointToOtherPoint.normalize();
+		double dotProd = Vec.dotProd(vecFromPlanePointToOtherPoint, mNormal);
+		if (dotProd <= Surface.EPSILON && dotProd >= -(Surface.EPSILON)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

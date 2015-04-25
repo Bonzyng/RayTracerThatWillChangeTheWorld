@@ -61,29 +61,30 @@ public class RayTracer implements IRenderer {
 			if (line == canvasHeight / 2 && x == canvasWidth / 2) {
 				System.out.println("Half way there!");
 			}
-//			Ray ray = mScene.getCamera().constructRayThroughPixel(x, line, canvasHeight, canvasWidth);
+			
+			// get the super-sample level from the scene properties
 			int superSample = mScene.getSuperSample();
+			
+			// Vector to hold the results from the super sampling process
 			Vec[] superSamplers = new Vec[superSample * superSample];
 			int k = 0;
+			// Loop through the grid within each pixel
 			for (int sampleY = 0; sampleY < superSample; sampleY++) {
 				for (int sampleX = 0; sampleX < superSample; sampleX++) {
-//					System.out.println("x: " + x + " y: " + line);
+					// For each grid point, shoot a ray through it, calculate the color
+					// and add to the vector array
 					Ray superRay = mScene.getCamera().superSample(x, line, sampleX, sampleY, canvasWidth, canvasHeight, superSample);
 					Vec color = mScene.calcColor(superRay, 0);
 					mScene.ensureColorValuesLegal(color);
-//					System.out.println(color);
 					superSamplers[k] = color;
 					k++;
 				}
 			}
+			// Get the average value from the vector array and color the pixel
 			Vec color = Vec.getAverage(superSamplers);
-//			Vec color = mScene.calcColor(ray, 0);
-//			mScene.ensureColorValuesLegal(color);
-//			System.out.println(color); // DEBUG
 			Color rgb = new Color((float) color.x, (float) color.y, (float) color.z);
 			
 			canvas.setRGB(x, line, rgb.getRGB());
 		}
 	}
-
 }

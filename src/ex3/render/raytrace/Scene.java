@@ -229,7 +229,15 @@ public class Scene implements IInitable {
 		//adds a surface to the list of surfaces
 		if (surface != null) {
 			surface.init(attributes);
-			mSurfaces.add(surface);
+//			if (surface.getClass() == TriangleMesh.class) {
+//				ArrayList<Triangle> triangles = ((TriangleMesh) surface).mTriangles;
+//				for (int i = 0; i < triangles.size(); i++) {
+//					mSurfaces.add(triangles.get(i));
+//				}
+//			} else {
+				mSurfaces.add(surface);
+//			}
+			
 		}
 		
 		// adds a light to the list of lights

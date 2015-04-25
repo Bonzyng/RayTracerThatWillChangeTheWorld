@@ -24,7 +24,7 @@ public class TriangleMeshTest {
 		TriangleMesh tm = new TriangleMesh();
 		tm.init(attributes);
 		
-		Vec normal = tm.getNormalAtPoint(new Point3D(0, 0.5, 0));
+		Vec normal = tm.getNormalAtPoint(new Point3D(0.5, 0.5, 0.5));
 		System.out.println(normal);
 	}
 }
