@@ -44,7 +44,7 @@ public class ConvexPolygonTest {
 		
 		Ray r = new Ray(new Point3D(2.1, 4.4, 8.6), new Vec(-1, -2, -4));
 		
-		Point3D i = cp.intersect(r);
+		Point3D i = cp.intersect(r, false);
 		
 		assertTrue(i != null);
 	}
@@ -60,7 +60,7 @@ public class ConvexPolygonTest {
 		
 		Ray r = new Ray(new Point3D(2.5, 6, 11), new Vec(-1, -2, -4));
 		
-		Point3D i = cp.intersect(r);
+		Point3D i = cp.intersect(r, false);
 		
 		assertTrue(i == null);
 	}

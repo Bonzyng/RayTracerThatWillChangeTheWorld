@@ -58,9 +58,10 @@ public class RayTracer implements IRenderer {
 		int canvasHeight = canvas.getHeight();
 		for (int x = 0; x < canvasWidth; x++) {
 			
-//			if (line == canvasHeight / 2 && x == canvasWidth / 2) { // DEBUG HELPER
-//				System.out.println("Half way there!");
-//			}
+			if (line == 72 && x == 200) { // DEBUG HELPER
+				System.out.println("Half way there!");
+			}
+//			System.out.println("x: " + x + " line: " + line);
 			
 			// get the super-sample level from the scene properties
 			int superSampleFactor = mScene.getSuperSample();

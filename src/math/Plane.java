@@ -22,7 +22,7 @@ public class Plane {
 		mNormal.normalize();
 	}
 	
-	public Point3D intersect(Ray iRay) { // Ray given as p0 origin and v direction vector
+	public Point3D intersect(Ray iRay, boolean behind) { // Ray given as p0 origin and v direction vector
 										 // plane represented by point p and normal n
 		double nDotD;
 		// Check if n * v == 0. If yes, line is either on the plane (irrelevant)
@@ -35,10 +35,17 @@ public class Plane {
 		// the normal and the ray direction vectors is acute (0-90 or 270-360)
 		double angle = Math.acos(nDotD / (mNormal.length() * iRay.mDirectionVector.length()));
 		angle = Math.toDegrees(angle);
-				
-		if (angle < 90 || angle > 270) {
-			return null;
+		
+		if (behind) {
+			if (angle > 90 && angle < 270) {
+				return null;
+			}
+		} else {
+			if (angle < 90 || angle > 270) {
+				return null;
+			}
 		}
+		
 		
 		// Calculate t for which t = (p - p0) * n / v * n
 		double t = mNormal.dotProd(Point3D.getVec(iRay.mOriginPoint, mPoint)) / nDotD;

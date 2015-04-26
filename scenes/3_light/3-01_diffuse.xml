@@ -16,7 +16,8 @@
 	<sphere 
 	center="0 0 -1"	
 	radius="0.5"
-	mtl-diffuse = "0 1 1" 
+	mtl-diffuse = "0 1 1"
+	translucency="0.5"
 	/>
 
 	<triangle

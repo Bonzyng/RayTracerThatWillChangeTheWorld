@@ -49,7 +49,7 @@ public class PlaneTest {
 		Plane p = new Plane(p1, p2, p3);
 		Ray r = new Ray(new Point3D(0, 2, 0), new Vec(-1, 2, 4));
 		
-		Point3D i = p.intersect(r);
+		Point3D i = p.intersect(r, false);
 		assertTrue(i == null);
 	}
 	
@@ -61,7 +61,7 @@ public class PlaneTest {
 		Plane p = new Plane(p1, p2, p3);
 		Ray r = new Ray(new Point3D(0, 0, 0), new Vec(0, 0, -1));
 		
-		Point3D i = p.intersect(r);
+		Point3D i = p.intersect(r, false);
 		assertTrue(i != null);
 	}
 	
@@ -73,7 +73,7 @@ public class PlaneTest {
 		Plane p = new Plane(p1, p2, p3);
 		Ray r = new Ray(new Point3D(2.1, 4.4, 8.6), new Vec(1, 2, 4));
 		
-		Point3D i = p.intersect(r);
+		Point3D i = p.intersect(r, false);
 		assertTrue(i == null);
 	}
 }

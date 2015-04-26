@@ -36,11 +36,16 @@ public class ConvexPolygon extends Surface {
 	}
 
 	@Override
-	public Point3D intersect(Ray iRay) {
+	public Point3D intersect(Ray iRay, boolean behind) {
 		Plane plane = new Plane(mVertices.get(0), mVertices.get(1), mVertices.get(2));
 		mNormal = plane.mNormal;
+		Point3D intersectionPoint;
 		
-		Point3D intersectionPoint = plane.intersect(iRay);
+		if (behind) {
+			intersectionPoint = plane.intersect(iRay, true);
+		} else {
+			intersectionPoint = plane.intersect(iRay, false);
+		}
 		
 		if (intersectionPoint == null) {
 			return null;
@@ -74,7 +79,7 @@ public class ConvexPolygon extends Surface {
 	}
 	
 	private boolean checkEdge(Point3D originPoint, Point3D intersectionPoint, 
-			int vertex1, int vertex2) {
+			int vertex1, int vertex2) {		
 		Vec v1 = Point3D.getVec(originPoint, mVertices.get(vertex1));
 		Vec v2 = Point3D.getVec(originPoint, mVertices.get(vertex2));
 		

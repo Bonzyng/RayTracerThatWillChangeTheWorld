@@ -52,7 +52,7 @@ public class TriangleMesh extends Surface {
 	}
 	
 	@Override
-	public Point3D intersect(Ray iRay) {
+	public Point3D intersect(Ray iRay, boolean behind) {
 		Point3D closestIntersection = null;
 		double minDistance = Double.MAX_VALUE;
 		
@@ -62,15 +62,22 @@ public class TriangleMesh extends Surface {
 		// with it, and then we make sure that we take the closest intersection
 		for (int i = 0; i < numOfTriangles; i++) {
 			Surface triangle = mTriangles.get(i);
-			Point3D intersection = triangle.intersect(iRay);
+
+			Point3D intersectionPoint;
 			
-			if (intersection != null) {	// Found intersection
-				double distance = intersection.distance(iRay.mOriginPoint);
+			if (behind) {
+				intersectionPoint = triangle.intersect(iRay, true);
+			} else {
+				intersectionPoint = triangle.intersect(iRay, false);
+			}
+			
+			if (intersectionPoint != null) {	// Found intersection
+				double distance = intersectionPoint.distance(iRay.mOriginPoint);
 				
 				//updating the closest intersection
 				if (distance < minDistance && distance > EPSILON) {
 					minDistance = distance;
-					closestIntersection = intersection;
+					closestIntersection = intersectionPoint;
 				}			
 			}
 		}		

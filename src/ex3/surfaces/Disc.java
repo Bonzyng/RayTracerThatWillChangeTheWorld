@@ -28,10 +28,15 @@ public class Disc extends Sphere {
 	}
 	
 	@Override
-	public Point3D intersect(Ray iRay) {
+	public Point3D intersect(Ray iRay, boolean behind) {
 		Plane plane = new Plane(mCenter, mNormal);
+		Point3D intersectionPoint;
 		
-		Point3D intersectionPoint = plane.intersect(iRay);
+		if (behind) {
+			intersectionPoint = plane.intersect(iRay, true);
+		} else {
+			intersectionPoint = plane.intersect(iRay, false);
+		}
 		
 		if (intersectionPoint == null) {
 			return null;

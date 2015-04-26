@@ -43,7 +43,8 @@ public class Sphere extends Surface {
 	}
 
 	@Override
-	public Point3D intersect(Ray iRay) {
+	public Point3D intersect(Ray iRay, boolean behind) {
+		double p1, p2;
 		// see Rec04, p.11 for explanation to math
 		
 		Vec L = Point3D.getVec(iRay.mOriginPoint, mCenter);
@@ -76,8 +77,14 @@ public class Sphere extends Surface {
 		double t_h = Math.sqrt(radiusSqr - dSqr);
 		
 		// Intersection points of the ray with the sphere
-		double p1 = t_m - t_h;
-		double p2 = t_m + t_h;
+		if (behind) {
+			p1 = t_m + t_h;
+			p2 = t_m - t_h;
+		} else {
+			p1 = t_m - t_h;
+			p2 = t_m + t_h;
+		}
+		
 		
 		// Check if p1 is negative. If it is, it's behind the ray, and thus not on it.
 		// If positive, it's obviously closer to the ray origin than p2.

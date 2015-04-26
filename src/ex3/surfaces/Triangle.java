@@ -31,8 +31,8 @@ public class Triangle extends ConvexPolygon {
 	}
 
 	@Override
-	public Point3D intersect(Ray iRay) {
-		Point3D intersectionPoint = super.intersect(iRay);
+	public Point3D intersect(Ray iRay, boolean behind) {
+		Point3D intersectionPoint = super.intersect(iRay, behind);
 
 		return intersectionPoint;
 	}

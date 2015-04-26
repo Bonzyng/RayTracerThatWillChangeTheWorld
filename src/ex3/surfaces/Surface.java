@@ -112,7 +112,7 @@ public abstract class Surface {
 			}
 		} else {
 //			throw new IllegalArgumentException(ERR_NO_REFRACTIVE_INDEX);
-			mRefractiveIndex = 1.0;
+			mRefractiveIndex = 3.0;
 		}
 	}
 	
@@ -121,7 +121,9 @@ public abstract class Surface {
 	 * @param iRay
 	 * @return the closest point of intersection if one exists, or null otherwise
 	 */
-	public abstract Point3D intersect(Ray iRay);
+	public abstract Point3D intersect(Ray ray, boolean behind);
+	
+//	public abstract Point3D intersectBehind(Ray ray);
 	
 	/**
 	 * Get the normal vector to the surface at the given point
