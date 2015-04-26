@@ -107,7 +107,7 @@ public class Scene implements IInitable {
 		
 		if (attributes.containsKey("super-samp-width")) {
 			try {
-				mSuperSample = Integer.parseInt(attributes.get("super-sample-width"));
+				mSuperSample = Integer.parseInt(attributes.get("super-samp-width"));
 			} catch (NumberFormatException e) {
 				throw new IllegalArgumentException(ERR_SUPER_SAMPLE);
 			}
@@ -211,15 +211,15 @@ public class Scene implements IInitable {
 				
 				// Light is not occluded, calculate and add specular and diffusive light
 				rgb.add(calcDiffuseColor(intersect, light));
-				Vec specularColor = calcSpecularColor(intersect, light, ray);
-				rgb.add(specularColor);							
+				rgb.add(calcSpecularColor(intersect, light, ray));							
 			}
 			
 			// Calculate the reflective ray color recursively
 			Vec normalAtPoint = surfaceHit.getNormalAtPoint(rayHitPoint);
 			Ray outRay = constructOutRay(ray, normalAtPoint, rayHitPoint);
-			rgb.add(Vec.scale(surfaceHit.getReflectance(), calcColor(outRay, level + 1, width, height)));
-			
+			if (surfaceHit.mReflectance != 0) {
+				rgb.add(Vec.scale(surfaceHit.mReflectance, calcColor(outRay, level + 1, width, height)));
+			}			
 		}
 		
 		return rgb;
@@ -337,7 +337,7 @@ public class Scene implements IInitable {
 		// setting the reflective indices for the material the ray is coming to (i) 
 		// to the material of the object it is intersecting (r)
 		double reflectiveIndexI = AIR_REFRACTIVE_INDEX;
-		double reflectiveIndexR = intersect.getSurface().getRefractiveIndex();
+		double reflectiveIndexR = intersect.getSurface().mRefractiveIndex;
 		
 		// L is the vector from the hit point to the origin of the ray
 		Vec L = Vec.negate(ray.mDirectionVector);
@@ -369,11 +369,11 @@ public class Scene implements IInitable {
 	}	
 	
 	private Vec calcEmissionColor(Surface surface) {
-		return surface.getEmissionColor();
+		return surface.mMaterialEmission;
 	}
 	
 	private Vec calcAmbientColor(Surface surface) {
-		return Vec.scale(mAmbientLight, surface.getAmbientColor());
+		return Vec.scale(mAmbientLight, surface.mMaterialAmbient);
 	}
 	
 	private Vec calcDiffuseColor(Intersection intersection, Light light) {
@@ -410,7 +410,7 @@ public class Scene implements IInitable {
 		vecToLight.normalize();
 		normalAtHit.normalize();
 		
-		diffuseCoefficient	= intersection.getSurface().getDiffuseColor();
+		diffuseCoefficient	= intersection.getSurface().mMaterialDiffuse;
 		
 		// Calculate the diffusive light according to the formula from the lecture (Lec03, slide 44)
 		diffuseIntensity = Vec.scale(diffuseCoefficient, lightIntensity);
@@ -469,9 +469,9 @@ public class Scene implements IInitable {
 		}
 		vecToRayOrigin.normalize();
 		
-		specularCoefficient = intersection.getSurface().getSpecularColor();
+		specularCoefficient = intersection.getSurface().mMaterialSpecular;
 		
-		shininess = intersection.getSurface().getShininess();
+		shininess = intersection.getSurface().mMaterialShininess;
 		
 		double dotProd = vecToRayOrigin.dotProd(vecToLightReflection);
 		

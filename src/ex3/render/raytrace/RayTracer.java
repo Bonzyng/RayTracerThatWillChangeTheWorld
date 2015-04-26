@@ -63,17 +63,17 @@ public class RayTracer implements IRenderer {
 //			}
 			
 			// get the super-sample level from the scene properties
-			int superSample = mScene.getSuperSample();
+			int superSampleFactor = mScene.getSuperSample();
 			
 			// Vector to hold the results from the super sampling process
-			Vec[] superSamplers = new Vec[superSample * superSample];
+			Vec[] superSamplers = new Vec[superSampleFactor * superSampleFactor];
 			int k = 0;
 			// Loop through the grid within each pixel
-			for (int sampleY = 0; sampleY < superSample; sampleY++) {
-				for (int sampleX = 0; sampleX < superSample; sampleX++) {
+			for (int sampleY = 0; sampleY < superSampleFactor; sampleY++) {
+				for (int sampleX = 0; sampleX < superSampleFactor; sampleX++) {
 					// For each grid point, shoot a ray through it, calculate the color
 					// and add to the vector array
-					Ray superRay = mScene.getCamera().superSample(x, line, sampleX, sampleY, canvasWidth, canvasHeight, superSample);
+					Ray superRay = mScene.getCamera().constructRayThroughPixelWithSuperSample(x, line, sampleX, sampleY, canvasWidth, canvasHeight, superSampleFactor);
 					Vec color = mScene.calcColor(superRay, 0, x, line);
 					mScene.ensureColorValuesLegal(color);
 					superSamplers[k] = color;

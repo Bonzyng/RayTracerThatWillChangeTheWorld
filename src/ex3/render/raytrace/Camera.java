@@ -125,7 +125,22 @@ public class Camera implements IInitable{
 		return mEye;
 	}
 	
-	public Ray superSample(double x, double y, double sampleX, double sampleY, double width, double height, int superSample) {
+	/**
+	 * Construct a ray through a pixel and if super sampling is needed, through a grid
+	 * point inside the pixel. Returns the ray
+	 * 
+	 * @param x - width value of the pixel
+	 * @param y - height value of the pixel
+	 * @param sampleX - width value of the pixel grid
+	 * @param sampleY - height value of the pixel grid
+	 * @param width - width of the canvas
+	 * @param height - height of the canvas
+	 * @param superSample - the super sampling modifier
+	 * @return the ray through the pixel grid point
+	 */
+	public Ray constructRayThroughPixelWithSuperSample(double x, double y, 
+			double sampleX, double sampleY, double width, double height, int superSample) {
+		
 		// FIND PIXEL IN THE IMAGE
 		double pixelRatio = mScreenWidth / width;
 		Point3D ImageCenter2D = new Point3D(Math.floor(width / 2), Math.floor(height / 2), 0);
@@ -145,25 +160,29 @@ public class Camera implements IInitable{
 		Ray ray =  new Ray(mEye, rayVec);
 		
 		// FIND GRID POINT INSIDE THE PIXEL
-		double superSampleRatio = pixelRatio / superSample;
-		Point3D pixelCenter2D = new Point3D((pixelRatio / 2.0), (pixelRatio / 2.0), 0);
-		
-		Vec pixelRightDirection = Vec.crossProd(ray.mDirectionVector, mUpDirection);
-		Vec pixelUpDirection;
-		if (ray.mDirectionVector.dotProd(mUpDirection) != 0) {
-			pixelUpDirection = Vec.crossProd(pixelRightDirection, ray.mDirectionVector);
+		if (superSample > 1) {
+			double superSampleRatio = pixelRatio / superSample;
+			Point3D pixelCenter2D = new Point3D((pixelRatio / 2.0), (pixelRatio / 2.0), 0);
+			
+			Vec pixelRightDirection = Vec.crossProd(ray.mDirectionVector, mUpDirection);
+			Vec pixelUpDirection;
+			if (ray.mDirectionVector.dotProd(mUpDirection) != 0) {
+				pixelUpDirection = Vec.crossProd(pixelRightDirection, ray.mDirectionVector);
+			} else {
+				pixelUpDirection = new Vec(mUpDirection);
+			}
+			
+			Vec superScaledRight = Vec.scale((sampleX - pixelCenter2D.x) * superSampleRatio, pixelRightDirection);
+			Vec superScaledUp = Vec.scale((sampleY - pixelCenter2D.y) * superSampleRatio, pixelUpDirection);
+			superScaledUp.negate();
+			
+			Point3D p = new Point3D(new Point3D(pixel, superScaledRight), superScaledUp);
+			
+			Vec superRay = Point3D.getVec(mEye, p);
+			
+			return new Ray(mEye, superRay);
 		} else {
-			pixelUpDirection = new Vec(mUpDirection);
+			return ray;
 		}
-		
-		Vec superScaledRight = Vec.scale((sampleX - pixelCenter2D.x) * superSampleRatio, pixelRightDirection);
-		Vec superScaledUp = Vec.scale((sampleY - pixelCenter2D.y) * superSampleRatio, pixelUpDirection);
-		superScaledUp.negate();
-		
-		Point3D p = new Point3D(new Point3D(pixel, superScaledRight), superScaledUp);
-		
-		Vec superRay = Point3D.getVec(mEye, p);
-		
-		return new Ray(mEye, superRay);
 	}	
 }

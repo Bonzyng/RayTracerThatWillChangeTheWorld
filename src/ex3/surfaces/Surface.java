@@ -20,14 +20,14 @@ public abstract class Surface {
 	
 	public static final double EPSILON = 0.000001;
 	
-	protected Vec mMaterialDiffuse;
-	protected Vec mMaterialSpecular;
-	protected Vec mMaterialAmbient;
-	protected Vec mMaterialEmission;
-	protected int mMaterialShininess;
-	protected double mReflectance;
-	protected double mTranslucency;
-	protected double mRefractiveIndex;
+	public Vec mMaterialDiffuse;
+	public Vec mMaterialSpecular;
+	public Vec mMaterialAmbient;
+	public Vec mMaterialEmission;
+	public int mMaterialShininess;
+	public double mReflectance;
+	public double mTranslucency;
+	public double mRefractiveIndex;
 	
 	public Surface() {}
 	
@@ -130,36 +130,4 @@ public abstract class Surface {
 	 * @return normal to the surface at that point
 	 */
 	public abstract Vec getNormalAtPoint(Point3D point);
-	
-	public Vec getEmissionColor() {
-		return new Vec(mMaterialEmission);
-	}
-	
-	public Vec getAmbientColor() {
-		return new Vec(mMaterialAmbient);
-	}
-	
-	public Vec getDiffuseColor() {
-		return new Vec(mMaterialDiffuse);
-	}
-	
-	public Vec getSpecularColor() {
-		return new Vec(mMaterialSpecular);
-	}
-	
-	public double getShininess() {
-		return mMaterialShininess;
-	}
-	
-	public double getReflectance() {
-		return mReflectance;
-	}
-	
-	public double getTranslucency() {
-		return mTranslucency;
-	}
-	
-	public double getRefractiveIndex() {
-		return mRefractiveIndex;
-	}
 }
