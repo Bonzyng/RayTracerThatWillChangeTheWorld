@@ -37,8 +37,8 @@ public class TriangleMesh extends Surface {
 		Point3D[] vertices = new Point3D[3];
 		Scanner s = new Scanner(triangle);
 		
-		//reading the values of the three different points of the triangle
-		//and creating new points accordingly
+		// Reading the values of the three different points of the triangle
+		// and creating new points accordingly
 		for (int i = 0; i < 3; i++) {
 			x = s.nextDouble();
 			y = s.nextDouble();
@@ -58,14 +58,13 @@ public class TriangleMesh extends Surface {
 		
 		int numOfTriangles = mTriangles.size();
 		
-		//going over all the triangles, and for each triangle we check if the ray intersects
-		//with it, and then we make sure that we take the closest intersection
+		// Going over all the triangles, and for each triangle we check if the ray intersects
+		// with it, and then we make sure that we take the closest intersection
 		for (int i = 0; i < numOfTriangles; i++) {
 			Surface triangle = mTriangles.get(i);
 			Point3D intersection = triangle.intersect(iRay);
 			
-			//found intersection
-			if (intersection != null) {
+			if (intersection != null) {	// Found intersection
 				double distance = intersection.distance(iRay.mOriginPoint);
 				
 				//updating the closest intersection
@@ -83,18 +82,18 @@ public class TriangleMesh extends Surface {
 		Triangle triangle = null;
 		int numOfTriangles = mTriangles.size();
 
-		//go over every triangle to find the triangle that has the point on it
+		// Go over every triangle to find the triangle the point is on
 		for (int i = 0; i < numOfTriangles; i++) {
 			Triangle currTriangle = mTriangles.get(i);
 			
-			//findTriangle is a method to find whether point is on triangle
+			// findTriangle is a method to find whether point is on triangle
 			if (findTriangle(currTriangle, point)) {
 				triangle = currTriangle;
 				break;
 			}
 		}
 		
-		//the normal is being calculate for the specific triangle using triangle class
+		// The normal is the normal of the triangle found
 		Vec normal = triangle.getNormalAtPoint(point);
 		return normal;
 	}
@@ -112,12 +111,12 @@ public class TriangleMesh extends Surface {
 		
 		Plane trianglePlane = new Plane(p0, p1, p2);
 		
-		//checking whether the point is on the same plane as triangle
+		// Checking whether the point is on the same plane as triangle
 		if (!trianglePlane.checkPointOnPlane(point)) {
 			return false;
 		}
 		
-		//using sameSide method to find out whether the point is inside the triangle
+		// Using sameSide method to find out whether the point is inside the triangle
 		if (sameSide(point, p0, p1, p2) && sameSide(point, p1, p0, p2) && sameSide(point, p2, p0, p1)) {
 			return true;
 		}

@@ -217,6 +217,7 @@ public class Scene implements IInitable {
 			// Calculate the reflective ray color recursively
 			Vec normalAtPoint = surfaceHit.getNormalAtPoint(rayHitPoint);
 			Ray outRay = constructOutRay(ray, normalAtPoint, rayHitPoint);
+			
 			if (surfaceHit.mReflectance != 0) {
 				rgb.add(Vec.scale(surfaceHit.mReflectance, calcColor(outRay, level + 1, width, height)));
 			}			
