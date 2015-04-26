@@ -62,6 +62,9 @@ public class Plane {
 	// for computer calculation error
 	public boolean checkPointOnPlane(Point3D point) {
 		Vec vecFromPlanePointToOtherPoint = Point3D.getVec(mPoint, point);
+		if (vecFromPlanePointToOtherPoint.equals(new Vec(0, 0, 0))) {
+			return true;
+		}
 		vecFromPlanePointToOtherPoint.normalize();
 		double dotProd = Vec.dotProd(vecFromPlanePointToOtherPoint, mNormal);
 		if (dotProd <= Surface.EPSILON && dotProd >= -(Surface.EPSILON)) {

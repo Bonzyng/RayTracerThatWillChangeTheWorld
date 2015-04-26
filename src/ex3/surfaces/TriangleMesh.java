@@ -142,9 +142,9 @@ public class TriangleMesh extends Surface {
 	 */
 	private boolean sameSide(Point3D point, Point3D p0, Point3D p1, Point3D p2) {
 		Vec crossProd1 = Vec.crossProd(Point3D.getVec(p1, p2), Point3D.getVec(p1, point));
-		crossProd1.normalize();
+//		crossProd1.normalize();
 		Vec crossProd2 = Vec.crossProd(Point3D.getVec(p1, p2), Point3D.getVec(p1, p0));
-		crossProd2.normalize();
+//		crossProd2.normalize();
 		
 		if (Vec.dotProd(crossProd1, crossProd2) >= 0) {
 			return true;

@@ -229,7 +229,7 @@ public class Scene implements IInitable {
 			}
 			
 			// Calculate the refractive ray color recursively if the material is refractive
-			if (surfaceHit.mTranslucency != 0) {
+			if (surfaceHit.mTranslucency != 0 && intersect.getSurface().getClass() == Sphere.class) {
 				Vec normalAtPoint = surfaceHit.getNormalAtPoint(rayHitPoint);
 				Ray outRay = constructThroughRay(ray, normalAtPoint, intersect);
 				rgb.add(Vec.scale(surfaceHit.mTranslucency, calcColor(outRay, level + 1, width, height)));
