@@ -123,10 +123,12 @@ public class Scene implements IInitable {
 	 * @param ray
 	 * @return the closest intersection point to the ray
 	 */
-	public Intersection findIntersection(Ray ray) {
+	public Intersection findIntersection(Ray ray, boolean behind) {
 		double minDistance = Double.MAX_VALUE;
 		Surface closestSurface = null;
 		Point3D closestIntersection = null;
+		
+		Point3D intersectingPoint;
 		
 		int numOfSurfaces = mSurfaces.size();
 		
@@ -135,17 +137,21 @@ public class Scene implements IInitable {
 			Surface surface = mSurfaces.get(i);
 			
 			// Find intersection point with each of them
-			Point3D intersection = surface.intersect(ray);
+			if (behind) {
+				intersectingPoint = surface.intersect(ray, true);
+			} else {
+				intersectingPoint = surface.intersect(ray, false);
+			}
 			
 			// If there's an intersection, calculate it's distance from the ray's
 			// origin and return the closest one
-			if (intersection != null) {
-				double distance = intersection.distance(ray.mOriginPoint);
+			if (intersectingPoint != null) {
+				double distance = intersectingPoint.distance(ray.mOriginPoint);
 				
 				if (distance < minDistance && distance > EPSILON) {
 					minDistance = distance;
 					closestSurface = surface;
-					closestIntersection = intersection;
+					closestIntersection = intersectingPoint;
 				}
 			}
 		}
@@ -164,7 +170,7 @@ public class Scene implements IInitable {
 		}
 		
 		// Check if the ray intersects with any objects
-		Intersection intersect = findIntersection(ray);
+		Intersection intersect = findIntersection(ray, false);
 				
 		Point3D rayHitPoint = intersect.getHit();
 		
@@ -195,7 +201,7 @@ public class Scene implements IInitable {
 				Ray rayToLight = constructRayToLight(rayHitPoint, light);
 				
 				// Check for shadows
-				Intersection lightOccluded = findIntersection(rayToLight);
+				Intersection lightOccluded = findIntersection(rayToLight, false);
 				
 				// If the ray to the light hits an object, and if the distance is greater than
 				// a constant EPSILON, consider the light occluded and ignore it
@@ -214,13 +220,20 @@ public class Scene implements IInitable {
 				rgb.add(calcSpecularColor(intersect, light, ray));							
 			}
 			
-			// Calculate the reflective ray color recursively
-			Vec normalAtPoint = surfaceHit.getNormalAtPoint(rayHitPoint);
-			Ray outRay = constructOutRay(ray, normalAtPoint, rayHitPoint);
 			
+			// Calculate the reflective ray color recursively if the material is reflectant
 			if (surfaceHit.mReflectance != 0) {
+				Vec normalAtPoint = surfaceHit.getNormalAtPoint(rayHitPoint);
+				Ray outRay = constructOutRay(ray, normalAtPoint, rayHitPoint);
 				rgb.add(Vec.scale(surfaceHit.mReflectance, calcColor(outRay, level + 1, width, height)));
-			}			
+			}
+			
+			// Calculate the refractive ray color recursively if the material is refractive
+			if (surfaceHit.mTranslucency != 0) {
+				Vec normalAtPoint = surfaceHit.getNormalAtPoint(rayHitPoint);
+				Ray outRay = constructThroughRay(ray, normalAtPoint, intersect);
+				rgb.add(Vec.scale(surfaceHit.mTranslucency, calcColor(outRay, level + 1, width, height)));
+			}
 		}
 		
 		return rgb;
@@ -312,19 +325,23 @@ public class Scene implements IInitable {
 	// Used to check if the light to an intersection point is blocked by another
 	// object or not
 	private Ray constructRayToLight(Point3D hit, Light light) {
+		Ray rayToLight;
+		
 		if (light.getClass() == DirectionalLight.class) {
 			DirectionalLight dLight = (DirectionalLight) light;
 			
-			return new Ray(hit, Vec.negate(dLight.getDirection()));
+			rayToLight = new Ray(hit, Vec.negate(dLight.getDirection()));
 		} else if (light.getClass() == OmniLight.class) {
 			OmniLight oLight = (OmniLight) light;
 			
-			return new Ray(hit, Point3D.getVec(hit, oLight.getPosition()));
+			rayToLight = new Ray(hit, Point3D.getVec(hit, oLight.getPosition()));
 		} else {
 			SpotLight sLight = (SpotLight) light;
 			
-			return new Ray(hit, Point3D.getVec(hit, sLight.getPosition()));
+			rayToLight = new Ray(hit, Point3D.getVec(hit, sLight.getPosition()));
 		}
+		
+		return rayToLight;
 	}
 	
 	// Used to create the reflective ray
@@ -349,11 +366,12 @@ public class Scene implements IInitable {
 		// origin (L) (eta_i), and the angle between the normal and the new 
 		// ray constructed to go through the surface
 		double eta_i = Vec.angle(normal, L);
-		double eta_r = Math.sinh(fractionOfReflectiveIndecies * Math.sin(eta_i));
+		double eta_r = Math.asin(fractionOfReflectiveIndecies * Math.sin(eta_i));
 		
 		// calculating the direction vector of the new ray that goes through the surface
 		// see Lec 3 p.68 (snell's law)
 		Vec newNormal = Vec.scale((fractionOfReflectiveIndecies * Math.cos(eta_i)) - Math.cos(eta_r), normal);
+		newNormal.normalize();
 		Vec T = Vec.sub(newNormal, Vec.scale(fractionOfReflectiveIndecies, L));
 		
 		// construct the new ray
@@ -361,7 +379,7 @@ public class Scene implements IInitable {
 		
 		// finding the intersection between the new ray and the exit point of the
 		// surface
-		Intersection outIntersection = findIntersection(throughRay);
+		Intersection outIntersection = findIntersection(throughRay, true);
 		
 		// returning the ray constructed on the other side of the surface
 		// using the original ray's direction vector and the exit point 
@@ -487,7 +505,6 @@ public class Scene implements IInitable {
 		return specularIntensity;
 	}
 
-	
 	protected void ensureColorValuesLegal(Vec rgb) {
 		if (rgb.x > 1) {
 			rgb.x = 1;
@@ -526,4 +543,36 @@ public class Scene implements IInitable {
 	protected void setXMLPath(String path) {
 		mXMLPath = path + "/";
 	}
+	
+//	public Intersection findIntersectionBehind(Ray ray) {
+//		double minDistance = Double.MAX_VALUE;
+//		Surface closestSurface = null;
+//		Point3D closestIntersection = null;
+//		
+//		int numOfSurfaces = mSurfaces.size();
+//		
+//		// Loop through all surfaces in the scene
+//		for (int i = 0; i < numOfSurfaces; i++) {
+//			Surface surface = mSurfaces.get(i);
+//			
+//			// Find intersection point with each of them
+//			Point3D intersection = surface.intersectBehind(ray);
+//			
+//			// If there's an intersection, calculate it's distance from the ray's
+//			// origin and return the closest one
+//			if (intersection != null) {
+//				double distance = intersection.distance(ray.mOriginPoint);
+//				
+//				if (distance < minDistance && distance > EPSILON) {
+//					minDistance = distance;
+//					closestSurface = surface;
+//					closestIntersection = intersection;
+//				}
+//			}
+//		}
+//		
+//		Intersection intersection = new Intersection(closestIntersection, closestSurface);
+//		
+//		return intersection;
+//	}
 }
